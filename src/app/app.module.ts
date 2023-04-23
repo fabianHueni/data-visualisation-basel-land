@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { PopulationService } from './common/service/population.service';
+import { ChoroplethComponent } from './choropleth/choropleth.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -16,7 +17,7 @@ function initializeApp(populationService: PopulationService) {
 }
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent],
+  declarations: [AppComponent, NavbarComponent, ChoroplethComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
