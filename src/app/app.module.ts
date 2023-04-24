@@ -12,6 +12,7 @@ import { DocumentationComponent } from './documentation/documentation.component'
 import { DataComponent } from './data/data.component';
 import { HomeComponent } from './home/home.component';
 import { MunicipalityComponent } from './municipality/municipality.component';
+import { HeatmapComponent } from './heatmap/heatmap.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -21,7 +22,7 @@ function initializeApp(populationService: PopulationService) {
 }
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, AboutComponent, DocumentationComponent, DataComponent, HomeComponent, MunicipalityComponent],
+  declarations: [AppComponent, NavbarComponent, AboutComponent, DocumentationComponent, DataComponent, HomeComponent, MunicipalityComponent, HeatmapComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
