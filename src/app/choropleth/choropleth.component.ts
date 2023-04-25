@@ -26,9 +26,9 @@ export class ChoroplethComponent implements AfterViewInit {
   constructor(private populationService: PopulationService) {}
 
   ngAfterViewInit() {
-    this.renderMap();
     this.constructTooltip();
     this.constructPathGenerator();
+    this.renderMap();
   }
 
   /**
@@ -43,7 +43,7 @@ export class ChoroplethComponent implements AfterViewInit {
     this.redraw();
   }
 
-  redraw() {
+  private redraw() {
     select('#mapCanvas')
       .selectAll('path')
       .data(mapData.features)
