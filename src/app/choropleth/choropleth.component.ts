@@ -1,8 +1,11 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import * as d3 from 'd3';
-import { geoMercator } from 'd3-geo';
-import { geoPath } from 'd3';
+import { AfterViewInit, Component } from '@angular/core';
+import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
+import { geoPath, geoTransform, InternMap, scaleLinear, select } from 'd3';
+import bbox from '@turf/bbox';
+import { Selection } from 'd3-selection';
+import { PopulationService } from '../common/service/population.service';
+import { interpolateOranges } from 'd3-scale-chromatic';
 
 @Component({
   selector: 'app-choropleth',
@@ -10,142 +13,159 @@ import { mapData } from './map-data';
   styleUrls: ['./choropleth.component.scss'],
 })
 export class ChoroplethComponent implements AfterViewInit {
-  /*
-    private svg;
-    private height: number;
-    private width: number;
-    private projection;
-  */
+  tooltip: Selection<any, any, any, any> | undefined;
 
-  width = 1000;
+  population: InternMap =
+    this.populationService.getAgeMedianPerMunicipalityByYear(2022);
+
+  width = 1200;
   height = 600;
-  initialScale = 200;
 
-  lastScale = 0;
-  centerX = 0;
-  centerY = 0;
-  lastCenterX = 0;
-  lastCenterY = 0;
+  private pathGenerator: GeoPath<any, any> | null = null;
 
-  countryColors = [];
-
-  projection = geoMercator().scale(this.initialScale).center([0, 0]);
-
-  zoom = () =>
-    d3
-      .zoom()
-      .scaleExtent([1, 8])
-      .on('zoom', (event: any) => {
-        const features = d3.selectAll('.country');
-        const t = event.transform;
-
-        const scale = t.k * this.initialScale;
-        const centerY = t.y;
-        const centerX = t.x;
-        let updated = false;
-
-        if (scale !== this.lastScale) {
-          this.projection.scale(scale);
-          this.lastScale = scale;
-          updated = true;
-        }
-        if (centerX !== this.lastCenterX || centerY !== this.lastCenterY) {
-          // this.projection.center([centerY, centerX]);
-          updated = true;
-          console.log(this.projection.scale(), scale, t.k, t.y);
-        }
-
-        if (updated) {
-          const path = d3.geoPath().projection(this.projection);
-          features.attr('d', path.toString);
-        }
-      });
+  constructor(private populationService: PopulationService) {}
 
   ngAfterViewInit() {
     this.renderMap();
+    this.constructTooltip();
+    this.constructPathGenerator();
   }
 
+  /**
+   * Render the initial map
+   */
   renderMap() {
-    const svg = d3.select('#mapCanvas');
+    select('#mapCanvas')
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .append('g');
 
-    svg.attr('width', this.width).attr('height', this.height).append('g');
-    svg.call(this.zoom);
     this.redraw();
   }
 
   redraw() {
-    const svg = d3.select('#mapCanvas');
-    const path = d3.geoPath().projection(this.projection);
-
-    console.log(mapData.features);
-    console.log(path);
-
-    svg
+    select('#mapCanvas')
       .selectAll('path')
       .data(mapData.features)
       .enter()
-      .join('path')
-      .attr('d', path)
-      .attr('class', 'country')
-      .attr('fill', '#862727')
-      .attr('stroke', '#181164')
-      .attr('stroke-width', 0.2)
-      .on('mouseover', (event: MouseEvent, d: any) => {
-        this.hoverHandler(event);
+      .append('path')
+      .attr('d', this.pathGenerator)
+      .attr('class', 'municipality')
+      .attr('stroke', 'gray')
+      .attr('stroke-width', 0.5)
+      .attr('fill', (d) => {
+        const age = this.getMedianAgePerId(d);
+        return interpolateOranges((1 / 20) * (age - 35));
       })
-      .on('mouseout', (event: MouseEvent, d: any) => {
-        this.hoverHandler(event, d);
-      });
+      .on('mouseover', (event: MouseEvent) => {
+        this.mouseover(event);
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        this.mouseleave(event);
+      })
+      .on('mousemove', (event: MouseEvent, data: any) =>
+        this.mousemove(event, data)
+      );
   }
 
-  hoverHandler(event: MouseEvent, d?: any) {
+  /**
+   * Show the tooltip when the mouse is over a shape and restyle the border (stroke) of the current shape.
+   *
+   * @param event The mouse event to get the current target and therefore the correct shape.
+   * @private
+   */
+  private mouseover(event: MouseEvent) {
+    this.tooltip?.style('opacity', 1);
+
     // @ts-ignore
-    const node = d3.select(event.currentTarget);
-    if (d) {
-      node.attr('fill', '#2c33af');
-    } else {
-      node.attr('fill', 'rgba(255, 255, 0, 0.25)');
-    }
+    select(event.currentTarget)
+      .style('stroke', 'black')
+      .style('stroke-width', 3);
   }
 
-  /*constructor() {
-  this.svg = select('svg');
-  this.width = +this.svg.attr('width');
-  this.height = +this.svg.attr('height');
-}
-ngOnInit() {
-  this.prepareChoropleth();
-  this.drawChoropleth();
-}
+  /**
+   * When the mouse move, update the tooltip text with the correct data and set the new position of the tooltip.
+   *
+   * @param event The mouse event to get the current position of the mouse
+   * @param data The feature of the hovered shape from the geojson file
+   * @private
+   */
+  private mousemove(event: MouseEvent, data: any) {
+    this.tooltip
+      ?.html(
+        '<b>' +
+          data.properties.name +
+          '</b><br>' +
+          'Medianalter: ' +
+          this.getMedianAgePerId(data)
+      )
+      .style('left', event.x + 15 + 'px')
+      .style('top', event.y + 'px');
+  }
 
-prepareChoropleth() {
-  // Map and projection
-  const path = geoPath();
-  const projection = geoMercator()
-    .scale(70)
-    .center([0, 20])
-    .translate([this.width / 2, this.height / 2]);
+  /**
+   * Hide the tooltip and reset the border (stroke) of the shape when the mouse leaf a municipality.
+   *
+   * @param event Mouse Event to get the current target of the mouse
+   * @private
+   */
+  private mouseleave(event: MouseEvent) {
+    this.tooltip?.style('opacity', 0);
 
-  // Data and color scale
-  const data = map();
-  const colorScale = scaleThreshold()
-    .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
-    .range(schemeBlues[6]);
-}
+    // @ts-ignore
+    select(event.currentTarget)
+      .style('stroke', 'gray')
+      .style('stroke-width', 0.5);
+  }
 
-private drawChoropleth() {
-  this.svg
-    .append('g')
-    .selectAll('path')
-    .data(geojson.features)
-    .enter()
-    .append('path')
-    // draw each country
-    .attr('d', geoPath().projection(this.projection))
-    // set the color of each country
-    .attr('fill', function (d) {
-      d.total = data.get(d.id) || 0;
-      return colorScale(d.total);
+  /**
+   * Extract the median age from the population data for a corresponding shape data.
+   * Therefore, maps the `gemeinde_id_bfs` from the geo-json to a municipality from the population data
+   *
+   * @param d The shape data from the geo-json
+   * @private
+   */
+  private getMedianAgePerId(d: any): number {
+    return this.population.get(d.properties.gemeinde_id_bfs);
+  }
+
+  /**
+   * Construct the path generator with projection for the LV95 swiss coordinates according to the tutorial
+   * of Benja Zehr on {@link https://blog.az.sg/posts/mapping-switzerland-2/}.
+   *
+   * @private
+   */
+  private constructPathGenerator() {
+    const [maxX, maxY, minX, minY] = bbox(mapData);
+    const height = ((maxY - minY) / (maxX - minX)) * this.width;
+
+    const x = scaleLinear().range([0, this.width]).domain([maxX, minX]);
+    const y = scaleLinear().range([0, height]).domain([minY, maxY]);
+
+    const projection = geoTransform({
+      point: function (px, py) {
+        this.stream.point(x(px), y(py));
+      },
     });
-}*/
+
+    this.pathGenerator = geoPath<any>().projection(projection);
+  }
+
+  /**
+   * Construct the initial tooltip with a new div appended to the DOM.
+   * Does have more styles from the css class.
+   *
+   * @private
+   */
+  private constructTooltip() {
+    this.tooltip = select('#mapWrapper')
+      .append('div')
+      .style('opacity', 0)
+      .attr('class', 'map-tooltip')
+      .style('background-color', 'white')
+      .style('border', 'solid')
+      .style('border-width', '2px')
+      .style('border-radius', '5px')
+      .style('padding', '5px');
+  }
 }
