@@ -1,5 +1,11 @@
-<p-tabMenu
-  [model]="items"
-  [activeItem]="activeItem"
-  (activeItemChange)="onActiveItemChange($event)"
-></p-tabMenu>
+<div class="nav-bar">
+  <div class="nav-logo">
+    <!-- TODO: implement logo of application -->
+  </div>
+
+  <div class="nav-items">
+    <a *ngFor="let item of items" class="nav-item" [routerLink]="item.url">
+      {{ item.label }}
+    </a>
+  </div>
+</div>
