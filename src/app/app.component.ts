@@ -12,22 +12,10 @@ export class AppComponent implements OnInit {
   constructor(private dataService: PopulationService) {}
 
   async ngOnInit() {
-    // this.dataService.getPopulationData();
-    /*    console.log(data.slice(0, 100));
-
-    // @ts-ignore
-    const sumPersons = sum(data, (d) => +d.anzahl_personen);
-    console.log(sumPersons);
-
-    console.log(
-      group(data, (d) => d.year),
-      (d: any) => d.gemeinde
-    );*/
-
     const personsByCity =
       this.dataService.getAgeMedianPerMunicipalityByYear(2022);
 
     console.log(personsByCity);
-    console.log(personsByCity.get(2022)?.get('Wintersingen'));
+    console.log(personsByCity.get('Wintersingen'));
   }
 }
