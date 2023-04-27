@@ -20,6 +20,24 @@ export class HomeComponent implements OnInit {
     (value, index) => 2022 - index
   );
 
+  /**
+   * An array with all years from 2003 to 2022.
+   * These are the years we have data to display.
+   */
+  public datasets = [
+    { label: 'Medianalter', value: 'median' },
+    { label: 'Kinder pro Einwohner', value: 'children' },
+    { label: 'Betagte pro Einwohner', value: 'seniors' },
+  ];
+
+  public set selectedDataset(dataset: string) {
+    console.log(dataset);
+    this._selectedDataSet = dataset;
+  }
+  public get selectedDataset() {
+    return this._selectedDataSet;
+  }
+
   public set selectedYear(year: number) {
     this._selectedYear = year;
     this.populationData =
@@ -32,6 +50,7 @@ export class HomeComponent implements OnInit {
   }
 
   private _selectedYear = 2022;
+  private _selectedDataSet = 'median';
 
   ngOnInit() {
     this.years;

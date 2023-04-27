@@ -17,6 +17,7 @@ import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { SliderModule } from 'primeng/slider';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -45,6 +46,7 @@ function initializeApp(populationService: PopulationService) {
     DropdownModule,
     FormsModule,
     SliderModule,
+    SelectButtonModule,
   ],
   providers: [
     PopulationService,

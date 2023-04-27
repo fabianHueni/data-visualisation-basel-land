@@ -9,8 +9,17 @@
   explicabo ipsum odit praesentium quo velit voluptatem. Harum, nam.
 </p>
 
-<p-card class="flex">
-  <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+<p-card>
+  <div class="flex justify-content-between">
+    <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+    <p-selectButton
+      [options]="datasets"
+      [(ngModel)]="selectedDataset"
+      optionLabel="label"
+      optionValue="value"
+    ></p-selectButton>
+  </div>
+
   <!--  <p-slider
     [(ngModel)]="selectedYear"
     [step]="1"
