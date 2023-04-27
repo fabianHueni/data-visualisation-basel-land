@@ -1,5 +1,9 @@
-<div id="mapWrapper">
+<div id="mapWrapper" #mapWrapper>
   <svg id="mapCanvas" width="400" height="500"></svg>
+  <div id="tooltip" class="map-tooltip">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Medianalter:
+    {{ this.getMedianAgePerId(tooltipData) }} Jahre
+  </div>
 </div>
-
-<div class="custom-tooltip"></div>

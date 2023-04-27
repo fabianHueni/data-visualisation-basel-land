@@ -14,8 +14,8 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     const personsByCity =
       this.dataService.getAgeMedianPerMunicipalityByYear(2022);
-
+    /*
     console.log(personsByCity);
-    console.log(personsByCity.get('Wintersingen'));
+    console.log(personsByCity.get('Wintersingen'));*/
   }
 }

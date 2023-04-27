@@ -1,4 +1,10 @@
-import { AfterViewInit, Component } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  ViewChild,
+} from '@angular/core';
 import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
 import { geoPath, geoTransform, InternMap, scaleLinear, select } from 'd3';
@@ -6,6 +12,7 @@ import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
 import { PopulationService } from '../common/service/population.service';
 import { interpolateOranges } from 'd3-scale-chromatic';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-choropleth',
@@ -13,19 +20,57 @@ import { interpolateOranges } from 'd3-scale-chromatic';
   styleUrls: ['./choropleth.component.scss'],
 })
 export class ChoroplethComponent implements AfterViewInit {
-  tooltip: Selection<any, any, any, any> | undefined;
+  tooltipData: any = null;
 
-  population: InternMap =
-    this.populationService.getAgeMedianPerMunicipalityByYear(2022);
+  /**
+   * A map of a value for each 'gemeinde_id_bfs'. The municipality of the choropleth will be colored depending on the
+   * value of the corresponding map entry.
+   * E.g.
+   *  5008: 2.5,
+   *  5009: 3.2
+   */
+  @Input()
+  public get data() {
+    return this._data;
+  }
+  public set data(data: InternMap) {
+    this._data = data;
+    this.redraw();
+  }
 
-  width = 1200;
-  height = 600;
+  @ViewChild('mapWrapper')
+  mapWrapper: ElementRef | undefined;
 
+  private _data: InternMap = new InternMap<any, any>();
+
+  private tooltip: Selection<any, any, any, any> | undefined;
+
+  /**
+   * The width of the svg-canvas. Depends on the available space.
+   * @private
+   */
+  private width = 0;
+
+  /**
+   * The hight of the svg-canvas. Depends on the available space.
+   * @private
+   */
+  private height = 0;
+
+  /**
+   * The path generator for the choropleth. Needs to convert the LV95 coordinates to
+   * coordinates on the svg-canvas.
+   * @private
+   */
   private pathGenerator: GeoPath<any, any> | null = null;
 
-  constructor(private populationService: PopulationService) {}
+  constructor(
+    private populationService: PopulationService,
+    private router: Router
+  ) {}
 
   ngAfterViewInit() {
+    this.width = this.mapWrapper?.nativeElement.offsetWidth;
     this.constructTooltip();
     this.constructPathGenerator();
     this.renderMap();
@@ -34,7 +79,7 @@ export class ChoroplethComponent implements AfterViewInit {
   /**
    * Render the initial map
    */
-  renderMap() {
+  private renderMap() {
     select('#mapCanvas')
       .attr('width', this.width)
       .attr('height', this.height)
@@ -44,6 +89,8 @@ export class ChoroplethComponent implements AfterViewInit {
   }
 
   private redraw() {
+    select('#mapCanvas').selectAll('path').remove();
+
     select('#mapCanvas')
       .selectAll('path')
       .data(mapData.features)
@@ -65,7 +112,10 @@ export class ChoroplethComponent implements AfterViewInit {
       })
       .on('mousemove', (event: MouseEvent, data: any) =>
         this.mousemove(event, data)
-      );
+      )
+      .on('click', (event: MouseEvent, data: any) => {
+        this.router.navigate(['gemeinde', data.properties.gemeinde_id_bfs]);
+      });
   }
 
   /**
@@ -91,16 +141,10 @@ export class ChoroplethComponent implements AfterViewInit {
    * @private
    */
   private mousemove(event: MouseEvent, data: any) {
+    this.tooltipData = data;
     this.tooltip
-      ?.html(
-        '<b>' +
-          data.properties.name +
-          '</b><br>' +
-          'Medianalter: ' +
-          this.getMedianAgePerId(data)
-      )
-      .style('left', event.x + 15 + 'px')
-      .style('top', event.y + 'px');
+      ?.style('left', event.pageX + 15 + 'px')
+      .style('top', event.pageY + 'px');
   }
 
   /**
@@ -125,8 +169,8 @@ export class ChoroplethComponent implements AfterViewInit {
    * @param d The shape data from the geo-json
    * @private
    */
-  private getMedianAgePerId(d: any): number {
-    return this.population.get(d.properties.gemeinde_id_bfs);
+  public getMedianAgePerId(d: any): number {
+    return this.data.get(d?.properties.gemeinde_id_bfs);
   }
 
   /**
@@ -137,10 +181,10 @@ export class ChoroplethComponent implements AfterViewInit {
    */
   private constructPathGenerator() {
     const [maxX, maxY, minX, minY] = bbox(mapData);
-    const height = ((maxY - minY) / (maxX - minX)) * this.width;
+    this.height = ((maxY - minY) / (maxX - minX)) * this.width;
 
     const x = scaleLinear().range([0, this.width]).domain([maxX, minX]);
-    const y = scaleLinear().range([0, height]).domain([minY, maxY]);
+    const y = scaleLinear().range([0, this.height]).domain([minY, maxY]);
 
     const projection = geoTransform({
       point: function (px, py) {
@@ -158,10 +202,8 @@ export class ChoroplethComponent implements AfterViewInit {
    * @private
    */
   private constructTooltip() {
-    this.tooltip = select('#mapWrapper')
-      .append('div')
+    this.tooltip = select('#tooltip')
       .style('opacity', 0)
-      .attr('class', 'map-tooltip')
       .style('background-color', 'white')
       .style('border', 'solid')
       .style('border-width', '2px')

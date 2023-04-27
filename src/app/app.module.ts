@@ -13,7 +13,10 @@ import { DocumentationComponent } from './documentation/documentation.component'
 import { DataComponent } from './data/data.component';
 import { HomeComponent } from './home/home.component';
 import { MunicipalityComponent } from './municipality/municipality.component';
-
+import { CardModule } from 'primeng/card';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms';
+import { SliderModule } from 'primeng/slider';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -23,12 +26,25 @@ function initializeApp(populationService: PopulationService) {
 }
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, AboutComponent, ChoroplethComponent, DocumentationComponent, DataComponent, HomeComponent, MunicipalityComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    AboutComponent,
+    ChoroplethComponent,
+    DocumentationComponent,
+    DataComponent,
+    HomeComponent,
+    MunicipalityComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     TabMenuModule,
+    CardModule,
+    DropdownModule,
+    FormsModule,
+    SliderModule,
   ],
   providers: [
     PopulationService,

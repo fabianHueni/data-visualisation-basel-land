@@ -9,4 +9,13 @@
   explicabo ipsum odit praesentium quo velit voluptatem. Harum, nam.
 </p>
 
-<app-choropleth></app-choropleth>
+<p-card class="flex">
+  <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+  <!--  <p-slider
+    [(ngModel)]="selectedYear"
+    [step]="1"
+    [min]="2003"
+    [max]="2022"
+  ></p-slider>-->
+  <app-choropleth [data]="populationData"></app-choropleth>
+</p-card>
