@@ -1,15 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { mockData } from './mockData';
 import { Data } from '@angular/router';
-import {
-  axisBottom,
-  axisLeft,
-  interpolateInferno,
-  scaleBand,
-  scaleLinear,
-  scaleSequential,
-  select,
-} from 'd3';
+import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
 
 @Component({
   selector: 'heatmap',
@@ -20,7 +12,7 @@ export class HeatmapComponent implements OnInit {
   private data: Data[] = mockData;
 
   // set the dimensions and margins of the graph
-  private margin = { top: 80, right: 25, bottom: 30, left: 40 };
+  private margin = { top: 80, right: 25, bottom: 30, left: 60 };
   private width = 450 - this.margin.left - this.margin.right;
   private height = 500 - this.margin.top - this.margin.bottom;
 
@@ -57,7 +49,7 @@ export class HeatmapComponent implements OnInit {
     .interpolator(interpolateInferno)
     .domain([1, 100]); */
 
-  private tooltip = select('#my_dataviz')
+  private tooltip = select('#heatmap_canvas')
     .append('div')
     .style('opacity', 0)
     .attr('class', 'tooltip')
@@ -70,11 +62,11 @@ export class HeatmapComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    select('#heatmap_viz')
-      .append('svg')
+    select('#heatmap_canvas')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
+      .attr('id', 'heatmap')
       .attr(
         'transform',
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
@@ -107,25 +99,21 @@ export class HeatmapComponent implements OnInit {
   } */
 
   private renderHeatmap() {
-    select('heatmap_viz')
+    select('#heatmap')
       .append('g')
+      .call(axisBottom(this.x).tickSize(5))
       .style('font-size', 15)
-      .attr('transform', 'translate(0,' + this.height + ')')
-      .call(axisBottom(this.x).tickSize(0))
-      .select('.domain')
-      .remove();
+      .attr('transform', 'translate(0,' + this.height + ')');
 
-    select('#heatmap_viz')
+    select('#heatmap')
       .append('g')
-      .style('font-size', 15)
-      .call(axisLeft(this.y).tickSize(0))
-      .select('.domain')
-      .remove();
+      .call(axisLeft(this.y).tickSize(5))
+      .style('font-size', 15);
   }
 
   //Read the data
   private readData(data: Data[]) {
-    select('#heatmap_viz')
+    select('#heatmap')
       .selectAll()
       .data(data, function (d) {
         return `${d!.age} : ${d!.age}`;
