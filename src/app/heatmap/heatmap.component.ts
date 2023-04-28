@@ -14,33 +14,35 @@ export class HeatmapComponent implements OnInit {
   // set the dimensions and margins of the graph
   private margin = { top: 80, right: 25, bottom: 30, left: 40 };
   private width = 450 - this.margin.left - this.margin.right;
-  private height = 450 - this.margin.top - this.margin.bottom;
+  private height = 500 - this.margin.top - this.margin.bottom;
 
   // Labels of row and columns
-  private myGroups = [
+  private myVars = [
     ...new Set(
-      mockData.map((d) => {
-        d.age;
+      this.data.map((d) => {
+        return d.age;
       })
     ),
   ];
-  private myVars = [
+  private myGroups = [
     ...new Set(
-      mockData.map((data) => {
-        data.year;
+      this.data.map((data) => {
+        return data.year;
       })
     ),
   ];
   private x = scaleBand()
     .range([0, this.width])
-    .domain(`${this.myGroups}`)
-    .padding(0.01);
+    .domain(this.myGroups)
+    .padding(0.05);
   private y = scaleBand()
     .range([this.height, 0])
-    .domain(`${this.myVars}`)
-    .padding(0.01);
+    .domain(this.myVars)
+    .padding(0.05); // Zwischenraum zwischen Boxen
 
-  private myColor = scaleLinear().range([1, 10]).domain([1, 100]);
+  private myColor = scaleLinear<string>()
+    .range(['white', '#69b3a2'])
+    .domain([1, 100]);
   constructor() {}
 
   ngOnInit() {
@@ -62,10 +64,8 @@ export class HeatmapComponent implements OnInit {
       .append('g')
       .attr('transform', 'translate(0,' + this.height + ')')
       .call(axisBottom(this.x));
-    // Build X scales and axis:
 
     select('#heatmap_viz').append('g').call(axisLeft(this.y));
-    // Build color scale
   }
 
   //Read the data
@@ -73,23 +73,20 @@ export class HeatmapComponent implements OnInit {
     select('#heatmap_viz')
       .selectAll()
       .data(data, function (d) {
-        if (d === undefined) {
-          return '';
-        }
-        return `${d.age} : ${d.count}`;
+        return `${d!.age} : ${d!.age}`;
       })
       .enter()
       .append('rect')
       .attr('x', (d) => {
-        return this.x(d.age) ?? '';
+        return this.x(d.year) ?? '';
       })
       .attr('y', (d) => {
-        return this.y(d.count) ?? '';
+        return this.y(d.age) ?? '';
       })
       .attr('width', this.x.bandwidth())
       .attr('height', this.y.bandwidth())
       .style('fill', (d) => {
-        return this.myColor(d.value);
+        return this.myColor(d.count);
       });
   }
 }
