@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { mockData } from './mockData';
 import { Data } from '@angular/router';
-import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
+import {
+  axisBottom,
+  axisLeft,
+  interpolateInferno,
+  scaleBand,
+  scaleLinear,
+  scaleSequential,
+  select,
+} from 'd3';
 
 @Component({
   selector: 'heatmap',
@@ -43,9 +51,25 @@ export class HeatmapComponent implements OnInit {
   private myColor = scaleLinear<string>()
     .range(['white', '#69b3a2'])
     .domain([1, 100]);
+
+  // Other Color verion
+  /*   private myColor = scaleSequential()
+    .interpolator(interpolateInferno)
+    .domain([1, 100]); */
+
+  private tooltip = select('#my_dataviz')
+    .append('div')
+    .style('opacity', 0)
+    .attr('class', 'tooltip')
+    .style('background-color', 'white')
+    .style('border', 'solid')
+    .style('border-width', '2px')
+    .style('border-radius', '5px')
+    .style('padding', '5px');
+
   constructor() {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     select('#heatmap_viz')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
@@ -59,13 +83,44 @@ export class HeatmapComponent implements OnInit {
     this.readData(this.data);
   }
 
+  // Three function that change the tooltip when user hover / move / leave a cell
+  /*   public mouseover(event: MouseEvent) {
+    this.tooltip
+      .style('opacity', 1)
+      // @ts-ignore
+      .select(event.currentTarget)
+      .style('stroke', 'black')
+      .style('opacity', 1);
+  }
+
+  public mousemove(event: MouseEvent, d: any) {
+    this.tooltip
+      .html(d.count)
+      .style('left', mouse(this)[0] + 70 + 'px')
+      .style('top', mouse(this)[1] + 'px');
+  }
+
+  public mouseleave(event: MouseEvent, d: any) {
+    this.tooltip.style('opacity', 0);
+    // @ts-ignore
+    select(event.currentTarget).style('stroke', 'none').style('opacity', 0.8);
+  } */
+
   private renderHeatmap() {
+    select('heatmap_viz')
+      .append('g')
+      .style('font-size', 15)
+      .attr('transform', 'translate(0,' + this.height + ')')
+      .call(axisBottom(this.x).tickSize(0))
+      .select('.domain')
+      .remove();
+
     select('#heatmap_viz')
       .append('g')
-      .attr('transform', 'translate(0,' + this.height + ')')
-      .call(axisBottom(this.x));
-
-    select('#heatmap_viz').append('g').call(axisLeft(this.y));
+      .style('font-size', 15)
+      .call(axisLeft(this.y).tickSize(0))
+      .select('.domain')
+      .remove();
   }
 
   //Read the data
@@ -87,6 +142,12 @@ export class HeatmapComponent implements OnInit {
       .attr('height', this.y.bandwidth())
       .style('fill', (d) => {
         return this.myColor(d.count);
-      });
+      })
+      .style('stroke-width', 4)
+      .style('stroke', 'none')
+      .style('opacity', 0.8);
+    /*       .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave) */
   }
 }
