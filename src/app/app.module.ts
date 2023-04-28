@@ -7,11 +7,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { PopulationService } from './common/service/population.service';
+import { ChoroplethComponent } from './choropleth/choropleth.component';
 import { AboutComponent } from './about/about.component';
 import { DocumentationComponent } from './documentation/documentation.component';
 import { DataComponent } from './data/data.component';
 import { HomeComponent } from './home/home.component';
 import { MunicipalityComponent } from './municipality/municipality.component';
+import { CardModule } from 'primeng/card';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms';
+import { SliderModule } from 'primeng/slider';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { HeatmapComponent } from './heatmap/heatmap.component';
 
 /**
@@ -22,12 +28,27 @@ function initializeApp(populationService: PopulationService) {
 }
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, AboutComponent, DocumentationComponent, DataComponent, HomeComponent, MunicipalityComponent, HeatmapComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    AboutComponent,
+    DocumentationComponent,
+    DataComponent,
+    HomeComponent,
+    MunicipalityComponent,
+    HeatmapComponent,
+    ChoroplethComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     TabMenuModule,
+    CardModule,
+    DropdownModule,
+    FormsModule,
+    SliderModule,
+    SelectButtonModule,
   ],
   providers: [
     PopulationService,
@@ -41,3 +62,4 @@ function initializeApp(populationService: PopulationService) {
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+

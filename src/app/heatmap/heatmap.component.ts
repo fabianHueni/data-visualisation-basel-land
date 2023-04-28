@@ -4,7 +4,7 @@ import { Data } from '@angular/router';
 import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
 
 @Component({
-  selector: 'heatmap',
+  selector: 'app-heatmap',
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
@@ -101,14 +101,18 @@ export class HeatmapComponent implements OnInit {
   private renderHeatmap() {
     select('#heatmap')
       .append('g')
-      .call(axisBottom(this.x).tickSize(5))
+      .call(axisBottom(this.x).tickSize(0))
       .style('font-size', 15)
-      .attr('transform', 'translate(0,' + this.height + ')');
+      .attr('transform', 'translate(0,' + this.height + ')')
+      .select('.domain')
+      .remove();
 
     select('#heatmap')
       .append('g')
-      .call(axisLeft(this.y).tickSize(5))
-      .style('font-size', 15);
+      .call(axisLeft(this.y).tickSize(0))
+      .style('font-size', 15)
+      .select('.domain')
+      .remove();
   }
 
   //Read the data

@@ -23,9 +23,21 @@ export class PopulationService {
   getAgeMedianPerMunicipalityByYear(year: number): InternMap {
     return rollup(
       this.populationData.filter((entry: Population) => entry.year == year),
-      (v) => median(v, (d: Population) => d.population),
-      (d) => d.year,
-      (d) => d.municipality
+      (v) => this.calcMedian(v),
+      (d) => d.municipality_number
+    );
+  }
+
+  /**
+   * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
+   *
+   * @param populations
+   */
+  calcMedian(populations: Population[]) {
+    return median(
+      populations.flatMap((pop: Population) => {
+        return new Array(pop.population).fill(pop.age);
+      })
     );
   }
 
