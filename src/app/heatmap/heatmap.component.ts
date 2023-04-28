@@ -1,77 +1,76 @@
-import { Component } from '@angular/core';
-import * as d3 from 'd3';
+import { Component, OnInit } from '@angular/core';
 import { mockData } from './mockData';
 import { Data } from '@angular/router';
+import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
 
 @Component({
   selector: 'heatmap',
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
-export class HeatmapComponent {
-  data: Data[] = mockData;
+export class HeatmapComponent implements OnInit {
+  private data: Data[] = mockData;
 
   // set the dimensions and margins of the graph
-  margin = { top: 80, right: 25, bottom: 30, left: 40 };
-  width = 450 - this.margin.left - this.margin.right;
-  height = 450 - this.margin.top - this.margin.bottom;
-
-  // append the svg object to the body of the page
-  svg = d3
-    .select('#my_dataviz')
-    .append('svg')
-    .attr('width', this.width + this.margin.left + this.margin.right)
-    .attr('height', this.height + this.margin.top + this.margin.bottom)
-    .append('g')
-    .attr(
-      'transform',
-      'translate(' + this.margin.left + ',' + this.margin.top + ')'
-    );
+  private margin = { top: 80, right: 25, bottom: 30, left: 40 };
+  private width = 450 - this.margin.left - this.margin.right;
+  private height = 450 - this.margin.top - this.margin.bottom;
 
   // Labels of row and columns
-  myGroups = [
+  private myGroups = [
     ...new Set(
       mockData.map((d) => {
         d.age;
       })
     ),
   ];
-  myVars = [
+  private myVars = [
     ...new Set(
       mockData.map((data) => {
         data.year;
       })
     ),
   ];
-  x = d3
-    .scaleBand()
+  private x = scaleBand()
     .range([0, this.width])
     .domain(`${this.myGroups}`)
     .padding(0.01);
-  y = d3
-    .scaleBand()
+  private y = scaleBand()
     .range([this.height, 0])
     .domain(`${this.myVars}`)
     .padding(0.01);
 
-  myColor = d3.scaleLinear().range([1, 10]).domain([1, 100]);
+  private myColor = scaleLinear().range([1, 10]).domain([1, 100]);
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    select('#heatmap_viz')
+      .append('svg')
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
+      .append('g')
+      .attr(
+        'transform',
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+      );
+    this.renderHeatmap();
+    this.readData(this.data);
+  }
 
   private renderHeatmap() {
-    this.svg
+    select('#heatmap_viz')
       .append('g')
       .attr('transform', 'translate(0,' + this.height + ')')
-      .call(d3.axisBottom(this.x));
+      .call(axisBottom(this.x));
     // Build X scales and axis:
-    this.svg.append('g').call(d3.axisLeft(y));
+
+    select('#heatmap_viz').append('g').call(axisLeft(this.y));
     // Build color scale
   }
 
   //Read the data
   private readData(data: Data[]) {
-    this.svg
+    select('#heatmap_viz')
       .selectAll()
       .data(data, function (d) {
         if (d === undefined) {
@@ -81,16 +80,16 @@ export class HeatmapComponent {
       })
       .enter()
       .append('rect')
-      .attr('x', function (d) {
-        return this.x(d.age);
+      .attr('x', (d) => {
+        return this.x(d.age) ?? '';
       })
-      .attr('y', function (d) {
-        return y(d.count);
+      .attr('y', (d) => {
+        return this.y(d.count) ?? '';
       })
-      .attr('width', x.bandwidth())
-      .attr('height', y.bandwidth())
-      .style('fill', function (d) {
-        return myColor(d.value);
+      .attr('width', this.x.bandwidth())
+      .attr('height', this.y.bandwidth())
+      .style('fill', (d) => {
+        return this.myColor(d.value);
       });
   }
 }
