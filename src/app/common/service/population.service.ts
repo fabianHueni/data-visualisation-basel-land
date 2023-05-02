@@ -16,8 +16,6 @@ export class PopulationService {
   /**
    * Returns the age median for all municipalities by a given year.
    *
-   * TODO: Does not really return the right median. By now this is only a function to simulate a data object.
-   *
    * @param year The year to calculate the medians
    */
   getAgeMedianPerMunicipalityByYear(year: number): InternMap {
@@ -29,15 +27,28 @@ export class PopulationService {
   }
 
   /**
-   * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
+   * Returns the percentage of seniors (>=65 years) for all municipalities by a given year.
    *
-   * @param populations
+   * @param year The year to calculate the medians
    */
-  calcMedian(populations: Population[]) {
-    return median(
-      populations.flatMap((pop: Population) => {
-        return new Array(pop.population).fill(pop.age);
-      })
+  getSeniorsPerMunicipalityByYear(year: number): InternMap {
+    return rollup(
+      this.populationData.filter((entry: Population) => entry.year == year),
+      (v) => this.calcAgeBucketPercentageRate(v, 64, Number.MAX_VALUE),
+      (d) => d.municipality_number
+    );
+  }
+
+  /**
+   * Returns the percentage of children (<18 years) for all municipalities by a given year.
+   *
+   * @param year The year to calculate the medians
+   */
+  getChildrenPerMunicipalityByYear(year: number): InternMap {
+    return rollup(
+      this.populationData.filter((entry: Population) => entry.year == year),
+      (v) => this.calcAgeBucketPercentageRate(v, -1, 18),
+      (d) => d.municipality_number
     );
   }
 
@@ -66,5 +77,51 @@ export class PopulationService {
             } as Population)
         ))
     );
+  }
+
+  /**
+   * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
+   *
+   * @param populations
+   */
+  private calcMedian(populations: Population[]) {
+    return median(
+      populations.flatMap((pop: Population) => {
+        return new Array(pop.population).fill(pop.age);
+      })
+    );
+  }
+
+  /**
+   * Calculate the percentage of an age bucket in relation to the total population.
+   * e.g. how many percentage is the age group within the interval [10, 20] years.
+   *
+   * @param populations the population data
+   * @param from the lower age boundary (inclusive)
+   * @param to the upper age boundary (inclusive)
+   * @private
+   */
+  private calcAgeBucketPercentageRate(
+    populations: Population[],
+    from: number,
+    to: number
+  ) {
+    const totalAgeGroup = populations
+      .filter((value) => from <= value.age && value.age <= to)
+      .reduce(
+        (accumulator, currentValue) => accumulator + currentValue.population,
+        0
+      );
+
+    const totalPopulation = populations.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.population,
+      0
+    );
+
+    return {
+      percentageAgeGroup: totalAgeGroup / totalPopulation,
+      totalAgeGroup: totalAgeGroup,
+      total: totalPopulation,
+    };
   }
 }

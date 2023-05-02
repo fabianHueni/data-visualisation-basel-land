@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   Input,
+  TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { GeoPath } from 'd3-geo';
@@ -10,9 +11,8 @@ import { mapData } from './map-data';
 import { geoPath, geoTransform, InternMap, scaleLinear, select } from 'd3';
 import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
-import { PopulationService } from '../common/service/population.service';
-import { interpolateOranges } from 'd3-scale-chromatic';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-choropleth',
@@ -22,26 +22,17 @@ import { Router } from '@angular/router';
 export class ChoroplethComponent implements AfterViewInit {
   tooltipData: any = null;
 
-  /**
-   * A map of a value for each 'gemeinde_id_bfs'. The municipality of the choropleth will be colored depending on the
-   * value of the corresponding map entry.
-   * E.g.
-   *  5008: 2.5,
-   *  5009: 3.2
-   */
   @Input()
-  public get data() {
-    return this._data;
-  }
-  public set data(data: InternMap) {
-    this._data = data;
-    this.redraw();
-  }
+  public tooltipRef?: TemplateRef<any>;
+
+  @Input()
+  public colorInterpolation: (d: any) => string = (d) => '';
+
+  @Input()
+  public changSubject: Subject<boolean> | undefined;
 
   @ViewChild('mapWrapper')
-  mapWrapper: ElementRef | undefined;
-
-  private _data: InternMap = new InternMap<any, any>();
+  public mapWrapper: ElementRef | undefined;
 
   private tooltip: Selection<any, any, any, any> | undefined;
 
@@ -64,16 +55,17 @@ export class ChoroplethComponent implements AfterViewInit {
    */
   private pathGenerator: GeoPath<any, any> | null = null;
 
-  constructor(
-    private populationService: PopulationService,
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
   ngAfterViewInit() {
     this.width = this.mapWrapper?.nativeElement.offsetWidth;
     this.constructTooltip();
     this.constructPathGenerator();
     this.renderMap();
+
+    this.changSubject?.subscribe((_) => {
+      this.redraw();
+    });
   }
 
   /**
@@ -101,8 +93,7 @@ export class ChoroplethComponent implements AfterViewInit {
       .attr('stroke', 'gray')
       .attr('stroke-width', 0.5)
       .attr('fill', (d) => {
-        const age = this.getMedianAgePerId(d);
-        return interpolateOranges((1 / 20) * (age - 35));
+        return this.colorInterpolation(d);
       })
       .on('mouseover', (event: MouseEvent) => {
         this.mouseover(event);
@@ -160,17 +151,6 @@ export class ChoroplethComponent implements AfterViewInit {
     select(event.currentTarget)
       .style('stroke', 'gray')
       .style('stroke-width', 0.5);
-  }
-
-  /**
-   * Extract the median age from the population data for a corresponding shape data.
-   * Therefore, maps the `gemeinde_id_bfs` from the geo-json to a municipality from the population data
-   *
-   * @param d The shape data from the geo-json
-   * @private
-   */
-  public getMedianAgePerId(d: any): number {
-    return this.data.get(d?.properties.gemeinde_id_bfs);
   }
 
   /**

@@ -16,7 +16,6 @@
       [options]="datasets"
       [(ngModel)]="selectedDataset"
       optionLabel="label"
-      optionValue="value"
     ></p-selectButton>
   </div>
 
@@ -26,5 +25,27 @@
     [min]="2003"
     [max]="2022"
   ></p-slider>-->
-  <app-choropleth [data]="populationData"></app-choropleth>
+  <app-choropleth
+    [tooltipRef]="seniorsTooltip"
+    [colorInterpolation]="getColorScheme"
+    [changSubject]="changingValue"
+  ></app-choropleth>
+
+  <ng-template #medianTooltip let-tooltipData="data">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Medianalter:
+    {{ this.getDataByShape(tooltipData) }} Jahre
+  </ng-template>
+
+  <ng-template #seniorsTooltip let-tooltipData="data">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Seniorenanteil:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Senioren:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total }}
+  </ng-template>
 </p-card>
