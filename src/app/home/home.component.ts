@@ -1,7 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+  ViewRef,
+} from '@angular/core';
 import { PopulationService } from '../common/service/population.service';
 import { interpolateOranges } from 'd3-scale-chromatic';
 import { Subject } from 'rxjs';
+import { interpolateBlues, interpolateCool, interpolateGreens } from 'd3';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +23,10 @@ export class HomeComponent {
 
   public changingValue: Subject<boolean> = new Subject();
 
+  @ViewChild('medianTooltip') tooltipMedian?: TemplateRef<any>;
+  @ViewChild('seniorsTooltip') tooltipSenior?: TemplateRef<any>;
+  @ViewChild('childrenTooltip') tooltipChildren?: TemplateRef<any>;
+
   /**
    * An array with all years from 2003 to 2022.
    * These are the years we have data to display.
@@ -25,7 +37,7 @@ export class HomeComponent {
   );
 
   /**
-   * An array with all data-selection-buttons to show.
+   * An array with all datasets to show.
    */
   public datasets = [
     {
@@ -33,18 +45,34 @@ export class HomeComponent {
       value: 'median',
       data: (year: number) =>
         this.populationService.getAgeMedianPerMunicipalityByYear(year),
+      color: (data: any) => {
+        return interpolateOranges((1 / 20) * (this.getDataByShape(data) - 35));
+      },
+      tooltipRef: () => this.tooltipMedian,
     },
     {
       label: 'Kinder pro Einwohner',
       value: 'children',
       data: (year: number) =>
         this.populationService.getChildrenPerMunicipalityByYear(year),
+      color: (data: any) => {
+        return interpolateGreens(
+          (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
+        );
+      },
+      tooltipRef: () => this.tooltipChildren,
     },
     {
       label: 'Senioren pro Einwohner',
       value: 'seniors',
       data: (year: number) =>
         this.populationService.getSeniorsPerMunicipalityByYear(year),
+      color: (data: any) => {
+        return interpolateBlues(
+          (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
+        );
+      },
+      tooltipRef: () => this.tooltipSenior,
     },
   ];
 
@@ -79,20 +107,7 @@ export class HomeComponent {
   }
 
   public getColorScheme = (data: any) => {
-    switch (this._selectedDataSet?.value) {
-      case 'median':
-        return interpolateOranges((1 / 20) * (this.getDataByShape(data) - 35));
-      case 'seniors':
-        return interpolateOranges(
-          this.getDataByShape(data)?.percentageAgeGroup * 3
-        );
-      case 'children':
-        return interpolateOranges(
-          this.getDataByShape(data)?.percentageAgeGroup * 3
-        );
-      default:
-        return '';
-    }
+    return this._selectedDataSet.color(data);
   };
 
   private updateData() {

@@ -18,6 +18,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { SliderModule } from 'primeng/slider';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { FooterComponent } from './footer/footer.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -36,6 +37,7 @@ function initializeApp(populationService: PopulationService) {
     DataComponent,
     HomeComponent,
     MunicipalityComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,

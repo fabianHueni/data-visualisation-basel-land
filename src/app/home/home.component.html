@@ -26,11 +26,12 @@
     [max]="2022"
   ></p-slider>-->
   <app-choropleth
-    [tooltipRef]="seniorsTooltip"
+    [tooltipRef]="selectedDataset.tooltipRef()"
     [colorInterpolation]="getColorScheme"
     [changSubject]="changingValue"
   ></app-choropleth>
 
+  <!-- Templates of tooltips for different data sets-->
   <ng-template #medianTooltip let-tooltipData="data">
     <b>{{ tooltipData?.properties.name }} </b>
     <br />
@@ -44,6 +45,17 @@
     Seniorenanteil:
     {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
     Total Senioren:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total }}
+  </ng-template>
+
+  <ng-template #childrenTooltip let-tooltipData="data">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Kinderanteil:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Kinder:
     {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
     Total Einwohner:
     {{ this.getDataByShape(tooltipData)?.total }}

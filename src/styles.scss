@@ -8,3 +8,36 @@
 
 // custom scss files
 @import "styles/tooltip";
+
+@font-face {
+  font-family: "Nova Round";
+  src: local("Nova Round"),
+    url(./assets/fonts/NovaRound-Regular.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: local("Roboto"),
+    url(./assets/fonts/Roboto-Regular.ttf) format("truetype");
+}
+
+body {
+  background-color: #fbfbfb;
+  /*  background-image: radial-gradient(rgba(0, 0, 0, 0.1) 5%, transparent 0);
+  background-size: 30px 30px;*/
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Nova Round", Sans-serif;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+p {
+  font-family: Roboto, sans-serif;
+  line-height: 25px;
+}
