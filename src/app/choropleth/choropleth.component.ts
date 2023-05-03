@@ -8,7 +8,14 @@ import {
 } from '@angular/core';
 import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
-import { geoPath, geoTransform, InternMap, scaleLinear, select } from 'd3';
+import {
+  geoPath,
+  geoTransform,
+  interpolateBlues,
+  scaleLinear,
+  select,
+  selectAll,
+} from 'd3';
 import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
 import { Router } from '@angular/router';
@@ -65,6 +72,7 @@ export class ChoroplethComponent implements AfterViewInit {
 
     this.changSubject?.subscribe((_) => {
       this.redraw();
+      this.drawLegend();
     });
   }
 
@@ -77,7 +85,26 @@ export class ChoroplethComponent implements AfterViewInit {
       .attr('height', this.height)
       .append('g');
 
+    this.drawLegend();
     this.redraw();
+  }
+
+  private drawLegend() {
+    const size = 20;
+    select('#legend')
+      .attr('width', this.width)
+      .attr('height', 40)
+      .selectAll('legendRect')
+      .data([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+      .enter()
+      .append('rect')
+      .attr('y', 0)
+      .attr('x', (d, i) => {
+        return this.width - 40 - i * (size + 2);
+      })
+      .attr('height', size)
+      .attr('width', size)
+      .style('fill', (d) => interpolateBlues(d));
   }
 
   private redraw() {

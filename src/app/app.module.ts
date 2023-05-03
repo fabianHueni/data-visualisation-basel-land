@@ -19,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 import { SliderModule } from 'primeng/slider';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { FooterComponent } from './footer/footer.component';
+import {InputNumberModule} from "primeng/inputnumber";
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -49,6 +50,7 @@ function initializeApp(populationService: PopulationService) {
     FormsModule,
     SliderModule,
     SelectButtonModule,
+    InputNumberModule,
   ],
   providers: [
     PopulationService,

@@ -25,7 +25,7 @@ export class HomeComponent {
 
   @ViewChild('medianTooltip') tooltipMedian?: TemplateRef<any>;
   @ViewChild('seniorsTooltip') tooltipSenior?: TemplateRef<any>;
-  @ViewChild('childrenTooltip') tooltipChildren?: TemplateRef<any>;
+  @ViewChild('ageBucketTooltip') tooltipAgeBucket?: TemplateRef<any>;
 
   /**
    * An array with all years from 2003 to 2022.
@@ -51,22 +51,24 @@ export class HomeComponent {
       tooltipRef: () => this.tooltipMedian,
     },
     {
-      label: 'Kinder pro Einwohner',
-      value: 'children',
+      label: 'Altersklassen pro Einwohner',
+      value: 'age-buckets',
       data: (year: number) =>
-        this.populationService.getChildrenPerMunicipalityByYear(year),
+        this.populationService.getAgeGroupPerMunicipalityByYear(
+          year,
+          this.minAge,
+          this.maxAge
+        ),
       color: (data: any) => {
-        return interpolateGreens(
-          (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
-        );
+        return interpolateGreens(this.getDataByShape(data)?.percentageAgeGroup);
       },
-      tooltipRef: () => this.tooltipChildren,
+      tooltipRef: () => this.tooltipAgeBucket,
     },
     {
-      label: 'Senioren pro Einwohner',
+      label: 'Betagte',
       value: 'seniors',
       data: (year: number) =>
-        this.populationService.getSeniorsPerMunicipalityByYear(year),
+        this.populationService.getAgeGroupPerMunicipalityByYear(year, 65, 200),
       color: (data: any) => {
         return interpolateBlues(
           (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
@@ -74,7 +76,37 @@ export class HomeComponent {
       },
       tooltipRef: () => this.tooltipSenior,
     },
+    {
+      label: 'Hochbetagte',
+      value: 'seniors',
+      data: (year: number) =>
+        this.populationService.getAgeGroupPerMunicipalityByYear(year, 80, 200),
+      color: (data: any) => {
+        return interpolateBlues(
+          this.getDataByShape(data)?.percentageAgeGroup * 8 // shift by 5% and stretch with 4
+        );
+      },
+      tooltipRef: () => this.tooltipSenior,
+    },
   ];
+
+  public set minAge(age: any) {
+    this._minAge = age;
+    this.updateData();
+  }
+
+  public get minAge() {
+    return this._minAge;
+  }
+
+  public set maxAge(age: any) {
+    this._maxAge = age;
+    this.updateData();
+  }
+
+  public get maxAge() {
+    return this._maxAge;
+  }
 
   public set selectedDataset(dataset: any) {
     this._selectedDataSet = dataset;
@@ -92,6 +124,9 @@ export class HomeComponent {
   public get selectedYear() {
     return this._selectedYear;
   }
+
+  private _maxAge = 110;
+  private _minAge = 0;
   private _selectedYear = 2022;
   private _selectedDataSet = this.datasets[0];
 

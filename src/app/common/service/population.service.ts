@@ -53,6 +53,23 @@ export class PopulationService {
   }
 
   /**
+   * Returns the percentage of an age group for all municipalities by a given year.
+   *
+   * @param year The year to calculate the medians
+   */
+  getAgeGroupPerMunicipalityByYear(
+    year: number,
+    minAge: number,
+    maxAge: number
+  ): InternMap {
+    return rollup(
+      this.populationData.filter((entry: Population) => entry.year == year),
+      (v) => this.calcAgeBucketPercentageRate(v, minAge, maxAge),
+      (d) => d.municipality_number
+    );
+  }
+
+  /**
    * Initialize the population data.
    */
   initializeData(): Promise<Population[]> {
