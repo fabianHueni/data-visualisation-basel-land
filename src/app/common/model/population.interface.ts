@@ -28,3 +28,21 @@ export interface Population {
    */
   population: number;
 }
+
+export interface PopulationByGroups {
+  /**
+   * The calendar year
+   */
+  year: number;
+
+  /**
+   * The age for the corresponding data entry.
+   * e.g. 0-4
+   */
+  ageGroup: string;
+
+  /**
+   * The number of persons who live in this municipality and are {@link age} years old.
+   */
+  population: number;
+}
