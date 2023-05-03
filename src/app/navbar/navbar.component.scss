@@ -9,7 +9,7 @@
   box-shadow: 0 0 8px 0 var(--surface-500);
 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 
   .nav-logo {
   }
@@ -19,9 +19,10 @@
     align-items: center;
 
     .nav-item {
-      padding-right: 20px;
+      padding: 0 25px;
       text-decoration: none;
-      font-family: var(--font-family);
+      font-family: Roboto, sans-serif;
+      font-size: 20px;
       color: var(--primary-color-text);
     }
   }
