@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { mockData } from './mockData';
-import { Data } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
+import {
+  AGE_GROUPS,
+  PopulationService,
+} from '../common/service/population.service';
+import { PopulationByGroups } from '../common/model/population.interface';
 
 @Component({
   selector: 'app-heatmap',
@@ -9,25 +12,38 @@ import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
   styleUrls: ['./heatmap.component.scss'],
 })
 export class HeatmapComponent implements OnInit {
-  private data: Data[] = mockData;
-
+  @Input()
+  public id = 2829;
+  private data: PopulationByGroups[][] =
+    this.popService.getPopulationNumbersAgeGroupsPerMunicipality(this.id);
+  private groups = AGE_GROUPS;
   // set the dimensions and margins of the graph
   private margin = { top: 80, right: 25, bottom: 30, left: 60 };
-  private width = 450 - this.margin.left - this.margin.right;
-  private height = 500 - this.margin.top - this.margin.bottom;
+  private width = 1000 - this.margin.left - this.margin.right;
+  private height = 1000 - this.margin.top - this.margin.bottom;
+
+  constructor(private popService: PopulationService) {}
+
+  ngOnInit(): void {
+    select('#heatmap_canvas')
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
+      .append('g')
+      .attr('id', 'heatmap')
+      .attr(
+        'transform',
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+      );
+    this.renderHeatmap();
+    this.readData(this.data);
+  }
 
   // Labels of row and columns
-  private myVars = [
-    ...new Set(
-      this.data.map((d) => {
-        return d.age;
-      })
-    ),
-  ];
+  private myVars = [...new Set(this.groups)];
   private myGroups = [
     ...new Set(
-      this.data.map((data) => {
-        return data.year;
+      this.data.map((d) => {
+        return `${d[0].year}`;
       })
     ),
   ];
@@ -58,22 +74,6 @@ export class HeatmapComponent implements OnInit {
     .style('border-width', '2px')
     .style('border-radius', '5px')
     .style('padding', '5px');
-
-  constructor() {}
-
-  ngOnInit(): void {
-    select('#heatmap_canvas')
-      .attr('width', this.width + this.margin.left + this.margin.right)
-      .attr('height', this.height + this.margin.top + this.margin.bottom)
-      .append('g')
-      .attr('id', 'heatmap')
-      .attr(
-        'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
-      );
-    this.renderHeatmap();
-    this.readData(this.data);
-  }
 
   // Three function that change the tooltip when user hover / move / leave a cell
   /*   public mouseover(event: MouseEvent) {
@@ -116,24 +116,26 @@ export class HeatmapComponent implements OnInit {
   }
 
   //Read the data
-  private readData(data: Data[]) {
+  private readData(data: PopulationByGroups[][]) {
+    const data2 = data.flat(2);
     select('#heatmap')
       .selectAll()
-      .data(data, function (d) {
-        return `${d!.age} : ${d!.age}`;
-      })
+      .data(
+        data2
+        // return `${d![0].ageGroup} : ${d![0].ageGroup}`;
+      )
       .enter()
       .append('rect')
       .attr('x', (d) => {
-        return this.x(d.year) ?? '';
+        return this.x(`${d.year}`) ?? '';
       })
       .attr('y', (d) => {
-        return this.y(d.age) ?? '';
+        return this.y(d.ageGroup) ?? '';
       })
       .attr('width', this.x.bandwidth())
       .attr('height', this.y.bandwidth())
       .style('fill', (d) => {
-        return this.myColor(d.count);
+        return this.myColor(d.population);
       })
       .style('stroke-width', 4)
       .style('stroke', 'none')
