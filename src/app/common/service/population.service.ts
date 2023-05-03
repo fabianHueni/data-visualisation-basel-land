@@ -120,19 +120,28 @@ export class PopulationService {
     );
   }
 
+  /**
+   * getter for Population Data of one Municipality
+   * @param id of municipality
+   * @returns Population[] of this municipality
+   */
   private getPopulationDataPerMunicipality(id: number): Population[] {
     return this.populationData.filter((p) => {
-      p.municipality_number === id;
+      return p.municipality_number === id;
     });
   }
 
-  public getPopulationNumbersAgeGroupsPerMunicipality(id: number) {
+  /**
+   * Maps Population according to 5-Years AgeGroups
+   * @param id of municipality
+   */
+  public getPopulationNumbersAgeGroupsPerMunicipality(
+    id: number
+  ): PopulationByGroups[][] {
     let pop = this.getPopulationDataPerMunicipality(id);
     let popByYearAndGroups = [];
     for (let i = 2003; i < 2023; i++) {
-      let popByYear = pop.filter((p) => {
-        p.year === i;
-      });
+      let popByYear = pop.filter((p) => p.year === i);
       let popByGroups: PopulationByGroups[] = [];
       for (let g of AGE_GROUPS) {
         popByGroups.push({
@@ -147,7 +156,15 @@ export class PopulationService {
       }
       popByYearAndGroups.push(popByGroups);
     }
+    return popByYearAndGroups;
   }
+
+  public getMunicipalityName(id: number): string {
+    let pop = this.populationData.filter((p) => p.municipality_number === id);
+
+    return pop[0].municipality;
+  }
+
   /**
    * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
    *
