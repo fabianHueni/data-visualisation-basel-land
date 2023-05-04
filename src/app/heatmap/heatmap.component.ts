@@ -15,18 +15,16 @@ import { Selection } from 'd3-selection';
 export class HeatmapComponent implements OnInit {
   @Input()
   public id = 2865;
-
   public tooltipData: any = null;
+  @ViewChild('heatmapWrapper')
+  public heatmapWrapper: ElementRef | undefined;
+
   private data: PopulationByGroups[][] =
     this.popService.getPopulationNumbersAgeGroupsPerMunicipality(this.id);
   private groups = AGE_GROUPS;
-  // set the dimensions and margins of the graph
   private margin = { top: 80, right: 25, bottom: 30, left: 60 };
   private width = 1000 - this.margin.left - this.margin.right;
-  private height = 500 - this.margin.top - this.margin.bottom;
-
-  @ViewChild('heatmapWrapper')
-  public heatmapWrapper: ElementRef | undefined;
+  private height = 700 - this.margin.top - this.margin.bottom;
 
   constructor(private popService: PopulationService) {}
 
@@ -52,54 +50,26 @@ export class HeatmapComponent implements OnInit {
   }
 
   // Labels of row and columns
-  private myVars = [...new Set(this.groups)];
-  private myGroups = [
+  private ageGroups = [...new Set(this.groups)];
+  private years = [
     ...new Set(
       this.data.map((d) => {
         return `${d[0].year}`;
       })
     ),
   ];
-  private x = scaleBand().range([0, 1200]).domain(this.myGroups).padding(0.05);
+  private x = scaleBand().range([0, 1200]).domain(this.years).padding(0.05);
 
   private y = scaleBand()
     .range([this.height, 0])
-    .domain(this.myVars)
+    .domain(this.ageGroups)
     .padding(0.05); // Zwischenraum zwischen Boxen
 
   private myColor = scaleLinear<string>()
-    .range(['white', '#69b3a2'])
+    .range(['#707070', '#ff4a3d'])
     .domain([0, 20]);
 
-  // Other Color verion
-  /*   private myColor = scaleSequential()
-    .interpolator(interpolateInferno)
-    .domain([1, 100]); */
-
   private tooltip: Selection<any, any, any, any> | undefined;
-
-  // Three function that change the tooltip when user hover / move / leave a cell
-  /*   public mouseover(event: MouseEvent) {
-    this.tooltip
-      .style('opacity', 1)
-      // @ts-ignore
-      .select(event.currentTarget)
-      .style('stroke', 'black')
-      .style('opacity', 1);
-  }
-
-  public mousemove(event: MouseEvent, d: any) {
-    this.tooltip
-      .html(d.count)
-      .style('left', mouse(this)[0] + 70 + 'px')
-      .style('top', mouse(this)[1] + 'px');
-  }
-
-  public mouseleave(event: MouseEvent, d: any) {
-    this.tooltip.style('opacity', 0);
-    // @ts-ignore
-    select(event.currentTarget).style('stroke', 'none').style('opacity', 0.8);
-  } */
 
   private renderHeatmap() {
     select('#heatmap')
@@ -122,10 +92,7 @@ export class HeatmapComponent implements OnInit {
   private readData(data: PopulationByGroups[][]) {
     select('#heatmap')
       .selectAll()
-      .data(
-        data.flat(2)
-        // return `${d![0].ageGroup} : ${d![0].ageGroup}`;
-      )
+      .data(data.flat(2))
       .enter()
       .append('rect')
       .attr('x', (d) => {
@@ -193,7 +160,6 @@ export class HeatmapComponent implements OnInit {
    */
   private mousemove(event: MouseEvent, data: any) {
     this.tooltipData = data;
-    console.log(this.tooltipData);
     this.tooltip
       ?.style('left', event.pageX + 15 + 'px')
       .style('top', event.pageY + 'px');
