@@ -18,8 +18,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { SliderModule } from 'primeng/slider';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { HeatmapComponent } from './heatmap/heatmap.component';
 import { FooterComponent } from './footer/footer.component';
-import {InputNumberModule} from "primeng/inputnumber";
+import { InputNumberModule } from 'primeng/inputnumber';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -33,11 +34,12 @@ function initializeApp(populationService: PopulationService) {
     AppComponent,
     NavbarComponent,
     AboutComponent,
-    ChoroplethComponent,
     DocumentationComponent,
     DataComponent,
     HomeComponent,
     MunicipalityComponent,
+    HeatmapComponent,
+    ChoroplethComponent,
     FooterComponent,
   ],
   imports: [

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { PopulationService } from '../common/service/population.service';
 
 @Component({
   selector: 'app-municipality',
@@ -7,13 +8,20 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./municipality.component.scss'],
 })
 export class MunicipalityComponent implements OnInit {
-  public municipalityId = 1234;
+  public municipalityId = 2829;
+  public municipalityName = 'unknown';
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private popService: PopulationService
+  ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(
+    /*     this.route.queryParams.subscribe(
       (params) => (this.municipalityId = params['id'])
+    ); */
+    this.municipalityName = this.popService.getMunicipalityName(
+      this.municipalityId ? this.municipalityId : 2829
     );
   }
 }

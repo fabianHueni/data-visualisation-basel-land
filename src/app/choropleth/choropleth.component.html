@@ -1,7 +1,7 @@
 <div id="mapWrapper" #mapWrapper>
   <svg id="legend"></svg>
   <svg id="mapCanvas"></svg>
-  <div id="tooltip" class="map-tooltip">
+  <div id="tooltip" class="tooltip">
     <ng-container
       *ngTemplateOutlet="tooltipRef ?? null; context: { data: tooltipData }"
     ></ng-container>
