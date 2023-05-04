@@ -8,8 +8,8 @@ import { PopulationService } from '../common/service/population.service';
   styleUrls: ['./municipality.component.scss'],
 })
 export class MunicipalityComponent implements OnInit {
-  public municipalityId = 2859;
-  public municipalityName = 'unknown';
+  public municipalityId = 2869;
+  public municipalities = this.popService.getMunicipalities();
 
   constructor(
     private route: ActivatedRoute,
@@ -20,8 +20,23 @@ export class MunicipalityComponent implements OnInit {
     /*     this.route.queryParams.subscribe(
       (params) => (this.municipalityId = params['id'])
     ); */
-    this.municipalityName = this.popService.getMunicipalityName(
+    this.selectedMunicipality = this.popService.getMunicipalityName(
       this.municipalityId ? this.municipalityId : 2829
+    );
+  }
+
+  public set selectedMunicipality(municipality: string) {
+    this._selectedMunicipality = municipality;
+    this.updateData();
+  }
+  public get selectedMunicipality() {
+    return this._selectedMunicipality;
+  }
+
+  public _selectedMunicipality: string = 'Liestal';
+  private updateData() {
+    this.municipalityId = this.popService.getMunicipalityIdByName(
+      this._selectedMunicipality
     );
   }
 }
