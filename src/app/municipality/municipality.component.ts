@@ -21,12 +21,13 @@ export class MunicipalityComponent implements OnInit {
       (params) => (this.municipalityId = params['id'])
     ); */
     this.selectedMunicipality = this.popService.getMunicipalityName(
-      this.municipalityId ? this.municipalityId : 2829
+      this.municipalityId
     );
   }
 
   public set selectedMunicipality(municipality: string) {
     this._selectedMunicipality = municipality;
+    console.log(this._selectedMunicipality);
     this.updateData();
   }
   public get selectedMunicipality() {
@@ -34,9 +35,11 @@ export class MunicipalityComponent implements OnInit {
   }
 
   public _selectedMunicipality: string = 'Liestal';
+
   private updateData() {
     this.municipalityId = this.popService.getMunicipalityIdByName(
       this._selectedMunicipality
     );
+    console.log(this.municipalityId);
   }
 }

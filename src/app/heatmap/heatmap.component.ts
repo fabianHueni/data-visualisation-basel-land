@@ -13,14 +13,15 @@ import { Selection } from 'd3-selection';
   styleUrls: ['./heatmap.component.scss'],
 })
 export class HeatmapComponent implements OnInit {
-  @Input()
-  public id = 2859;
+  @Input() public id?: number;
   public tooltipData: any = null;
   @ViewChild('heatmapWrapper')
   public heatmapWrapper: ElementRef | undefined;
 
   private data: PopulationByGroups[][] =
-    this.popService.getPopulationNumbersAgeGroupsPerMunicipality(this.id);
+    this.popService.getPopulationNumbersAgeGroupsPerMunicipality(
+      this.id ? this.id : 2829
+    );
   private max = this.popService.getMax(this.data);
   private groups = AGE_GROUPS;
   private margin = { top: 80, right: 25, bottom: 30, left: 60 };
@@ -30,6 +31,7 @@ export class HeatmapComponent implements OnInit {
   constructor(private popService: PopulationService) {}
 
   ngOnInit(): void {
+    console.log(this.id);
     this.width =
       this.heatmapWrapper?.nativeElement.offsetWidth -
       this.margin.left -
