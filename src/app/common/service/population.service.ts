@@ -176,6 +176,24 @@ export class PopulationService {
     return pop[0].municipality;
   }
 
+  public getMunicipalities(): string[] {
+    return [
+      ...new Set(
+        this.populationData.map((p) => {
+          return p.municipality;
+        })
+      ),
+    ];
+  }
+
+  public getMunicipalityIdByName(name: string): number {
+    let municipalityIds = this.populationData.filter(
+      (p) => p.municipality === name
+    );
+    return municipalityIds.length > 0
+      ? municipalityIds[0].municipality_number
+      : 0;
+  }
   /**
    * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
    *
