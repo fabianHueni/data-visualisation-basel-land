@@ -171,7 +171,7 @@ export class PopulationService {
     return max;
   }
   public getMunicipalityName(id: number): string {
-    let pop = this.populationData.filter((p) => p.municipality_number === id);
+    const pop = this.populationData.filter((p) => p.municipality_number === id);
 
     return pop[0].municipality;
   }

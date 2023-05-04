@@ -1,4 +1,11 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
 import {
   AGE_GROUPS,
@@ -12,15 +19,29 @@ import { Selection } from 'd3-selection';
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
-export class HeatmapComponent implements OnInit {
-  @Input() public id?: number;
+export class HeatmapComponent implements AfterViewInit {
+  @Input()
+  public set id(id: number) {
+    this._id = id;
+    this.data = this.popService.getPopulationNumbersAgeGroupsPerMunicipality(
+      this._id
+    );
+    this.max = this.popService.getMax(this.data);
+    this.readData(this.data);
+  }
+
+  public get id(): number {
+    return this._id;
+  }
+  private _id = 0;
   public tooltipData: any = null;
+
   @ViewChild('heatmapWrapper')
   public heatmapWrapper: ElementRef | undefined;
 
   private data: PopulationByGroups[][] =
     this.popService.getPopulationNumbersAgeGroupsPerMunicipality(
-      this.id ? this.id : 2829
+      this._id ? this._id : 2829
     );
   private max = this.popService.getMax(this.data);
   private groups = AGE_GROUPS;
@@ -30,8 +51,7 @@ export class HeatmapComponent implements OnInit {
 
   constructor(private popService: PopulationService) {}
 
-  ngOnInit(): void {
-    console.log(this.id);
+  ngAfterViewInit(): void {
     this.width =
       this.heatmapWrapper?.nativeElement.offsetWidth -
       this.margin.left -

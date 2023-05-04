@@ -17,29 +17,31 @@ export class MunicipalityComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    /*     this.route.queryParams.subscribe(
-      (params) => (this.municipalityId = params['id'])
-    ); */
+    this.route.params.subscribe((params) => {
+      // TODO: handle incoming id correct
+      // this.municipalityId = params['id'];
+      console.log(params['id']);
+    });
+
     this.selectedMunicipality = this.popService.getMunicipalityName(
       this.municipalityId
     );
   }
 
   public set selectedMunicipality(municipality: string) {
+    console.log(municipality);
     this._selectedMunicipality = municipality;
-    console.log(this._selectedMunicipality);
     this.updateData();
   }
   public get selectedMunicipality() {
     return this._selectedMunicipality;
   }
 
-  public _selectedMunicipality: string = 'Liestal';
+  public _selectedMunicipality = 'Liestal';
 
   private updateData() {
     this.municipalityId = this.popService.getMunicipalityIdByName(
       this._selectedMunicipality
     );
-    console.log(this.municipalityId);
   }
 }
