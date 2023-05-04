@@ -159,6 +159,17 @@ export class PopulationService {
     return popByYearAndGroups;
   }
 
+  public getMax(population: PopulationByGroups[][]): number {
+    let max = 0;
+    for (let pop of population) {
+      pop.map((p) => {
+        if (p.population > max) {
+          max = p.population;
+        }
+      });
+    }
+    return max;
+  }
   public getMunicipalityName(id: number): string {
     let pop = this.populationData.filter((p) => p.municipality_number === id);
 

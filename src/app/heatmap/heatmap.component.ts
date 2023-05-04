@@ -14,13 +14,14 @@ import { Selection } from 'd3-selection';
 })
 export class HeatmapComponent implements OnInit {
   @Input()
-  public id = 2865;
+  public id = 2859;
   public tooltipData: any = null;
   @ViewChild('heatmapWrapper')
   public heatmapWrapper: ElementRef | undefined;
 
   private data: PopulationByGroups[][] =
     this.popService.getPopulationNumbersAgeGroupsPerMunicipality(this.id);
+  private max = this.popService.getMax(this.data);
   private groups = AGE_GROUPS;
   private margin = { top: 80, right: 25, bottom: 30, left: 60 };
   private width = 1000 - this.margin.left - this.margin.right;
@@ -66,9 +67,8 @@ export class HeatmapComponent implements OnInit {
     .padding(0.05); // Zwischenraum zwischen Boxen
 
   private myColor = scaleLinear<string>()
-    .range(['#707070', '#ff4a3d'])
-    .domain([0, 20]);
-
+    .range(['white', '#b3706d'])
+    .domain([0, (this.max * 3) / 10]);
   private tooltip: Selection<any, any, any, any> | undefined;
 
   private renderHeatmap() {

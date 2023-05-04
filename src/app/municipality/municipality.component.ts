@@ -8,7 +8,7 @@ import { PopulationService } from '../common/service/population.service';
   styleUrls: ['./municipality.component.scss'],
 })
 export class MunicipalityComponent implements OnInit {
-  public municipalityId = 2829;
+  public municipalityId = 2859;
   public municipalityName = 'unknown';
 
   constructor(
