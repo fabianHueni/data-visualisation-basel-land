@@ -9,7 +9,14 @@ import {
 import { PopulationService } from '../common/service/population.service';
 import { interpolateOranges } from 'd3-scale-chromatic';
 import { Subject } from 'rxjs';
-import { interpolateBlues, interpolateCool, interpolateGreens } from 'd3';
+import {
+  interpolateBlues,
+  interpolateCool,
+  interpolateGreens,
+  scaleLinear,
+  select,
+} from 'd3';
+import { Dataset } from '../common/model/dataset.interface';
 
 @Component({
   selector: 'app-home',
@@ -39,16 +46,22 @@ export class HomeComponent {
   /**
    * An array with all datasets to show.
    */
-  public datasets = [
+  public datasets: Dataset[] = [
     {
       label: 'Medianalter',
       value: 'median',
       data: (year: number) =>
         this.populationService.getAgeMedianPerMunicipalityByYear(year),
       color: (data: any) => {
-        return interpolateOranges((1 / 20) * (this.getDataByShape(data) - 35));
+        return this.selectedDataset.colorScheme(
+          (1 / 20) * (this.getDataByShape(data) - 35)
+        );
       },
+      colorScheme: interpolateOranges,
       tooltipRef: () => this.tooltipMedian,
+      legendTitle: 'Medianalter in Jahren',
+      min: 35,
+      max: 55,
     },
     {
       label: 'Altersklassen pro Einwohner',
@@ -60,9 +73,15 @@ export class HomeComponent {
           this.maxAge
         ),
       color: (data: any) => {
-        return interpolateGreens(this.getDataByShape(data)?.percentageAgeGroup);
+        return this.selectedDataset.colorScheme(
+          this.getDataByShape(data)?.percentageAgeGroup
+        );
       },
+      colorScheme: interpolateGreens,
       tooltipRef: () => this.tooltipAgeBucket,
+      legendTitle: 'Anteil der Altersklasse in Prozent',
+      min: 0,
+      max: 100,
     },
     {
       label: 'Betagte',
@@ -70,11 +89,15 @@ export class HomeComponent {
       data: (year: number) =>
         this.populationService.getAgeGroupPerMunicipalityByYear(year, 65, 200),
       color: (data: any) => {
-        return interpolateBlues(
+        return this.selectedDataset.colorScheme(
           (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
         );
       },
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipSenior,
+      legendTitle: 'Anteil der Betagten in Prozent',
+      min: 0,
+      max: 30,
     },
     {
       label: 'Hochbetagte',
@@ -83,10 +106,14 @@ export class HomeComponent {
         this.populationService.getAgeGroupPerMunicipalityByYear(year, 80, 200),
       color: (data: any) => {
         return interpolateBlues(
-          this.getDataByShape(data)?.percentageAgeGroup * 8 // shift by 5% and stretch with 4
+          this.getDataByShape(data)?.percentageAgeGroup * 8
         );
       },
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipSenior,
+      legendTitle: 'Anteil der Hochbetagten in Prozent',
+      min: 0,
+      max: 10,
     },
   ];
 

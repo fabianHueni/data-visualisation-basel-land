@@ -47,7 +47,7 @@ export class HeatmapComponent implements AfterViewInit {
     );
   private max = 1;
   private groups = AGE_GROUPS;
-  private margin = { top: 80, right: 25, bottom: 30, left: 60 };
+  private margin = { top: 20, right: 25, bottom: 30, left: 60 };
   private width = 1000 - this.margin.left - this.margin.right;
   private height = 700 - this.margin.top - this.margin.bottom;
   constructor(private popService: PopulationService) {}
@@ -59,6 +59,11 @@ export class HeatmapComponent implements AfterViewInit {
       this.margin.right;
 
     this.constructTooltip();
+
+    this.x = scaleBand()
+      .range([0, this.width])
+      .domain(this.years)
+      .padding(0.05);
 
     select('#' + this.svgId)
       .attr('width', this.width + this.margin.left + this.margin.right)

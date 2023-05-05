@@ -101,7 +101,6 @@ export class ChoroplethComponent implements AfterViewInit {
 
     this.changSubject?.subscribe((_) => {
       this.redraw();
-      this.drawLegend();
     });
   }
 
@@ -114,30 +113,7 @@ export class ChoroplethComponent implements AfterViewInit {
       .attr('height', this.height)
       .append('g');
 
-    this.drawLegend();
     this.redraw();
-  }
-
-  /**
-   * Draws a legend to the top right of the choropleth.
-   * @private
-   */
-  private drawLegend() {
-    const size = 20;
-    select('#' + this.plotId + '-legend')
-      .attr('width', this.width)
-      .attr('height', 40)
-      .selectAll('legendRect')
-      .data([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
-      .enter()
-      .append('rect')
-      .attr('y', 0)
-      .attr('x', (d, i) => {
-        return this.width - 40 - i * (size + 2);
-      })
-      .attr('height', size)
-      .attr('width', size)
-      .style('fill', (d) => interpolateBlues(d));
   }
 
   /**

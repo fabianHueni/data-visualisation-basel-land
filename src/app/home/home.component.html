@@ -52,6 +52,12 @@
     [min]="2003"
     [max]="2022"
   ></p-slider>-->
+  <app-legend
+    [title]="selectedDataset.legendTitle"
+    [min]="selectedDataset.min"
+    [max]="selectedDataset.max"
+    [colorScheme]="selectedDataset.colorScheme"
+  ></app-legend>
   <app-choropleth
     [tooltipTemplate]="tooltipTemplate"
     [colorCallback]="getColorScheme"
@@ -91,8 +97,12 @@
   </ng-container>
 </ng-template>
 
-<p-card>
-  <h1>Altersverteilung auf dem ganzen Kanton</h1>
-  <p>Lirum larum Löffelstiel</p>
+<h1>Altersverteilung Basel-Land</h1>
+<p>
+  Diese Heatmap Grafik zeigt die Altersverteilung in 5-Jahresklassen pro
+  Kalenderjahr seit 2003 an. Je dunkler die Farbe, desto mehr Personen mit einem
+  Alter in dieser Altersklasse Alters leben in Basel-Land.
+</p>
+<p-card class="mb-4">
   <app-heatmap [id]="0"></app-heatmap>
 </p-card>

@@ -21,6 +21,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { HeatmapComponent } from './heatmap/heatmap.component';
 import { FooterComponent } from './footer/footer.component';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { LegendComponent } from './legend/legend.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -41,6 +42,7 @@ function initializeApp(populationService: PopulationService) {
     HeatmapComponent,
     ChoroplethComponent,
     FooterComponent,
+    LegendComponent,
   ],
   imports: [
     BrowserModule,
