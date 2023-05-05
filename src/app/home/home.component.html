@@ -23,7 +23,7 @@
     ></p-selectButton>
   </div>
 
-  <div class="filters flex" *ngIf="selectedDataset.value == 'age-buckets'">
+  <div class="filters flex" *ngIf="selectedDataset.value === 'age-buckets'">
     <span class="p-float-label">
       <p-inputNumber
         inputId="min-age"
@@ -53,40 +53,42 @@
     [max]="2022"
   ></p-slider>-->
   <app-choropleth
-    [tooltipRef]="selectedDataset.tooltipRef()"
+    [tooltipRef]="tooltipTemplate"
     [colorInterpolation]="getColorScheme"
     [changSubject]="changingValue"
   ></app-choropleth>
 </p-card>
 
 <!-- Templates of tooltips for different data sets-->
-<ng-template #medianTooltip let-tooltipData="data">
-  <b>{{ tooltipData?.properties.name }} </b>
-  <br />
-  Medianalter:
-  {{ this.getDataByShape(tooltipData) }} Jahre
-</ng-template>
+<ng-template #tooltipTemplate let-tooltipData="data">
+  <ng-container *ngIf="selectedDataset.value === 'median'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Medianalter:
+    {{ this.getDataByShape(tooltipData) }} Jahre
+  </ng-container>
 
-<ng-template #seniorsTooltip let-tooltipData="data">
-  <b>{{ tooltipData?.properties.name }} </b>
-  <br />
-  Seniorenanteil:
-  {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
-  Total Senioren:
-  {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
-  Total Einwohner:
-  {{ this.getDataByShape(tooltipData)?.total }}
-</ng-template>
+  <ng-container *ngIf="selectedDataset.value === 'seniors'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Seniorenanteil:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Senioren:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total }}
+  </ng-container>
 
-<ng-template #ageBucketTooltip let-tooltipData="data">
-  <b>{{ tooltipData?.properties.name }} </b>
-  <br />
-  Kinderanteil:
-  {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
-  Total Kinder:
-  {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
-  Total Einwohner:
-  {{ this.getDataByShape(tooltipData)?.total }}
+  <ng-container *ngIf="selectedDataset.value === 'age-buckets'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Kinderanteil:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Kinder:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total }}
+  </ng-container>
 </ng-template>
 
 <p-card>
