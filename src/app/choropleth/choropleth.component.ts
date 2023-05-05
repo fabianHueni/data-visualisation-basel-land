@@ -19,6 +19,7 @@ import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-choropleth',
@@ -26,6 +27,8 @@ import { Subject } from 'rxjs';
   styleUrls: ['./choropleth.component.scss'],
 })
 export class ChoroplethComponent implements AfterViewInit {
+  readonly plotId = `plot-${uuid()}`;
+
   public tooltipData: any = null;
 
   @Input()
@@ -79,7 +82,7 @@ export class ChoroplethComponent implements AfterViewInit {
    * Render the initial map
    */
   private renderMap() {
-    select('#mapCanvas')
+    select('#' + this.plotId + '-choropleth')
       .attr('width', this.width)
       .attr('height', this.height)
       .append('g');
@@ -90,7 +93,7 @@ export class ChoroplethComponent implements AfterViewInit {
 
   private drawLegend() {
     const size = 20;
-    select('#legend')
+    select('#' + this.plotId + '-legend')
       .attr('width', this.width)
       .attr('height', 40)
       .selectAll('legendRect')
@@ -107,9 +110,11 @@ export class ChoroplethComponent implements AfterViewInit {
   }
 
   private redraw() {
-    select('#mapCanvas').selectAll('path').remove();
+    select('#' + this.plotId + '-choropleth')
+      .selectAll('path')
+      .remove();
 
-    select('#mapCanvas')
+    select('#' + this.plotId + '-choropleth')
       .selectAll('path')
       .data(mapData.features)
       .enter()
@@ -208,7 +213,7 @@ export class ChoroplethComponent implements AfterViewInit {
    * @private
    */
   private constructTooltip() {
-    this.tooltip = select('#tooltip')
+    this.tooltip = select('#' + this.plotId + '-tooltip')
       .style('opacity', 0)
       .style('background-color', 'white')
       .style('border', 'solid')
