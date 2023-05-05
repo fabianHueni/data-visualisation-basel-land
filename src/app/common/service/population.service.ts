@@ -130,6 +130,9 @@ export class PopulationService {
    * @returns Population[] of this municipality
    */
   private getPopulationDataPerMunicipality(id: number): Population[] {
+    if (id === 0) {
+      return this.populationData;
+    }
     return this.populationData.filter((p) => {
       return p.municipality_number === id;
     });
