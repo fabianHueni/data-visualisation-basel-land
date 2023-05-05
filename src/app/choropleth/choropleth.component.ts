@@ -9,14 +9,11 @@ import {
 import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
 import {
-  bin,
   geoPath,
   geoTransform,
-  histogram,
   interpolateBlues,
   scaleLinear,
   select,
-  selectAll,
 } from 'd3';
 import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
