@@ -53,8 +53,8 @@
     [max]="2022"
   ></p-slider>-->
   <app-choropleth
-    [tooltipRef]="tooltipTemplate"
-    [colorInterpolation]="getColorScheme"
+    [tooltipTemplate]="tooltipTemplate"
+    [colorCallback]="getColorScheme"
     [changSubject]="changingValue"
   ></app-choropleth>
 </p-card>
