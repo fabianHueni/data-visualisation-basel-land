@@ -45,7 +45,7 @@ export class HeatmapComponent implements AfterViewInit {
     this.popService.getPopulationNumbersAgeGroupsPerMunicipality(
       this._id ? this._id : 2829
     );
-  private max = 1;
+  public max = 1;
   private groups = AGE_GROUPS;
   private margin = { top: 20, right: 25, bottom: 30, left: 60 };
   private width = 1000 - this.margin.left - this.margin.right;
@@ -95,7 +95,7 @@ export class HeatmapComponent implements AfterViewInit {
     .domain(this.ageGroups)
     .padding(0.05); // Zwischenraum zwischen Boxen
 
-  private myColor = scaleLinear<string>()
+  public myColor = scaleLinear<string>()
     .range(['white', '#4a5d75'])
     .domain([0, 0.3 * this.max]);
 

@@ -1,3 +1,8 @@
+<div class="heatmap-info">
+  <h2>Altersverteilung nach Jahr und Altersklasse</h2>
+  <app-legend [title]="'Anzahl Einwohner'" [max]="max"></app-legend>
+</div>
+
 <div #heatmapWrapper>
   <svg [id]="svgId"></svg>
   <div [id]="svgId + '-tooltip'" class="tooltip">
