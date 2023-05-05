@@ -43,7 +43,7 @@ export class HeatmapComponent implements AfterViewInit {
     this.popService.getPopulationNumbersAgeGroupsPerMunicipality(
       this._id ? this._id : 2829
     );
-  private max = this.popService.getMax(this.data);
+  private max = 1;
   private groups = AGE_GROUPS;
   private margin = { top: 80, right: 25, bottom: 30, left: 60 };
   private width = 1000 - this.margin.left - this.margin.right;
@@ -70,6 +70,8 @@ export class HeatmapComponent implements AfterViewInit {
       );
     this.renderHeatmap();
     this.readData(this.data);
+    this.max = this.popService.getMax(this.data);
+    console.log(this.max);
   }
 
   // Labels of row and columns
@@ -90,7 +92,8 @@ export class HeatmapComponent implements AfterViewInit {
 
   private myColor = scaleLinear<string>()
     .range(['white', '#b3706d'])
-    .domain([0, (this.max * 3) / 10]);
+    .domain([0, 0.3 * this.max]);
+
   private tooltip: Selection<any, any, any, any> | undefined;
 
   private renderHeatmap() {
@@ -112,6 +115,11 @@ export class HeatmapComponent implements AfterViewInit {
 
   //Read the data
   private readData(data: PopulationByGroups[][]) {
+    this.max = this.popService.getMax(this.data);
+    this.myColor = scaleLinear<string>()
+      .range(['white', '#b3706d'])
+      .domain([0, 0.35 * this.max]);
+
     select('#heatmap')
       .selectAll()
       .data(data.flat(2))
