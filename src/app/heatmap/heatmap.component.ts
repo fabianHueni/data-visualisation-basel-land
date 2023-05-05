@@ -71,7 +71,6 @@ export class HeatmapComponent implements AfterViewInit {
     this.renderHeatmap();
     this.readData(this.data);
     this.max = this.popService.getMax(this.data);
-    console.log(this.max);
   }
 
   // Labels of row and columns
@@ -91,7 +90,7 @@ export class HeatmapComponent implements AfterViewInit {
     .padding(0.05); // Zwischenraum zwischen Boxen
 
   private myColor = scaleLinear<string>()
-    .range(['white', '#b3706d'])
+    .range(['white', '#4a5d75'])
     .domain([0, 0.3 * this.max]);
 
   private tooltip: Selection<any, any, any, any> | undefined;
@@ -117,7 +116,7 @@ export class HeatmapComponent implements AfterViewInit {
   private readData(data: PopulationByGroups[][]) {
     this.max = this.popService.getMax(this.data);
     this.myColor = scaleLinear<string>()
-      .range(['white', '#b3706d'])
+      .range(['white', '#7491b5'])
       .domain([0, 0.35 * this.max]);
 
     select('#heatmap')

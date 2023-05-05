@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { dsv, InternMap, median, rollup } from 'd3';
-import { Population, PopulationByGroups } from '../model/population.interface';
+import {
+  Municipality,
+  Population,
+  PopulationByGroups,
+} from '../model/population.interface';
 
 export const AGE_GROUPS: string[] = [
   '0-4',
@@ -171,19 +175,23 @@ export class PopulationService {
     return max;
   }
   public getMunicipalityName(id: number): string {
-    const pop = this.populationData.filter((p) => p.municipality_number === id);
-
-    return pop[0].municipality;
+    const pop = this.populationData.filter((p) => {
+      return p.municipality_number == id;
+    });
+    return pop[0]?.municipality;
   }
 
-  public getMunicipalities(): string[] {
+  public getMunicipalities(): Municipality[] {
     return [
       ...new Set(
         this.populationData.map((p) => {
-          return p.municipality;
+          return JSON.stringify({
+            name: p.municipality,
+            id: p.municipality_number,
+          });
         })
       ),
-    ];
+    ].map((m) => JSON.parse(m));
   }
 
   public getMunicipalityIdByName(name: string): number {

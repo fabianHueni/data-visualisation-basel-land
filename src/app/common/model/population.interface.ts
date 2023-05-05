@@ -46,3 +46,8 @@ export interface PopulationByGroups {
    */
   population: number;
 }
+
+export interface Municipality {
+  id: number;
+  name: string;
+}
