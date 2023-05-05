@@ -156,7 +156,7 @@ export class HeatmapComponent implements AfterViewInit {
    * @private
    */
   private constructTooltip() {
-    this.tooltip = select('#tooltip')
+    this.tooltip = select('#heatmap-tooltip')
       .style('opacity', 0)
       .style('background-color', 'white')
       .style('border', 'solid')
