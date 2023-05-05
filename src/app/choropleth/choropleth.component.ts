@@ -9,8 +9,10 @@ import {
 import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
 import {
+  bin,
   geoPath,
   geoTransform,
+  histogram,
   interpolateBlues,
   scaleLinear,
   select,
@@ -27,7 +29,7 @@ import { Subject } from 'rxjs';
   styleUrls: ['./choropleth.component.scss'],
 })
 export class ChoroplethComponent implements AfterViewInit {
-  tooltipData: any = null;
+  public tooltipData: any = null;
 
   @Input()
   public tooltipRef?: TemplateRef<any>;

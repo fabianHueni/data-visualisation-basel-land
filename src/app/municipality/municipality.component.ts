@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PopulationService } from '../common/service/population.service';
+import { Municipality } from '../common/model/population.interface';
 
 @Component({
   selector: 'app-municipality',
@@ -8,9 +9,9 @@ import { PopulationService } from '../common/service/population.service';
   styleUrls: ['./municipality.component.scss'],
 })
 export class MunicipalityComponent implements OnInit {
-  public municipalityId = 2869;
-  public municipalities = this.popService.getMunicipalities();
-  public municipalitiesNames: string[] = [];
+  public municipalities: Municipality[] =
+    this.popService.getAllMunicipalities();
+  private _selectedMunicipality: Municipality = this.municipalities[0];
 
   constructor(
     private route: ActivatedRoute,
@@ -19,38 +20,25 @@ export class MunicipalityComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
-      this.municipalityId = params['id'];
-      this.selectedMunicipality = this.popService.getMunicipalityName(
-        this.municipalityId
-      );
+      this.selectedMunicipality =
+        this.municipalities.find(
+          (municipality) => municipality.id == params['id']
+        ) ?? this.selectedMunicipality;
     });
+
     this.sortMunicipalities();
-
-    this.selectedMunicipality = this.popService.getMunicipalityName(
-      this.municipalityId
-    );
   }
 
-  private sortMunicipalities() {
-    this.municipalitiesNames = this.municipalities.map((m) => m.name).sort();
-    this.municipalities = this.municipalities.sort();
-  }
-
-  public set selectedMunicipality(municipality: string) {
+  public set selectedMunicipality(municipality: Municipality) {
     this._selectedMunicipality = municipality;
-    this.updateData();
   }
-  public get selectedMunicipality() {
+  public get selectedMunicipality(): Municipality {
     return this._selectedMunicipality;
   }
 
-  public _selectedMunicipality = 'Liestal';
-
-  private updateData() {
-    for (const m of this.municipalities) {
-      if (m.name === this.selectedMunicipality) {
-        this.municipalityId = m.id;
-      }
-    }
+  private sortMunicipalities() {
+    this.municipalities = this.municipalities.sort((a, b) =>
+      a.name < b.name ? -1 : 1
+    );
   }
 }

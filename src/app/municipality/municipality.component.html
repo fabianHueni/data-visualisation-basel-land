@@ -1,4 +1,4 @@
-<h1>Demographie Gemeinde {{ selectedMunicipality }}</h1>
+<h1>Demographie Gemeinde {{ selectedMunicipality.name }}</h1>
 
 <p>
   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus amet
@@ -8,9 +8,14 @@
 
 <div class="flex justify-content-between mb-6">
   <p-dropdown
-    [options]="municipalitiesNames"
+    [options]="municipalities"
+    optionLabel="name"
     [(ngModel)]="selectedMunicipality"
+    [filter]="true"
+    filterBy="name"
   ></p-dropdown>
 </div>
 
-<app-heatmap [id]="municipalityId"></app-heatmap>
+<p-card>
+  <app-heatmap [id]="selectedMunicipality.id"></app-heatmap>
+</p-card>

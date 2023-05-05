@@ -145,20 +145,20 @@ export class PopulationService {
   public getPopulationNumbersAgeGroupsPerMunicipality(
     id: number
   ): PopulationByGroups[][] {
-    let pop = this.getPopulationDataPerMunicipality(id);
-    let popByYearAndGroups = [];
+    const pop = this.getPopulationDataPerMunicipality(id);
+    const popByYearAndGroups = [];
     for (let i = 2003; i < 2023; i++) {
-      let popByYear = pop.filter((p) => p.year === i);
-      let popByGroups: PopulationByGroups[] = [];
-      for (let g of AGE_GROUPS) {
+      const popByYear = pop.filter((p) => p.year === i);
+      const popByGroups: PopulationByGroups[] = [];
+      for (const g of AGE_GROUPS) {
         popByGroups.push({
           year: i,
           ageGroup: g,
           population: 0,
         });
       }
-      for (let p of popByYear) {
-        let index = Math.floor(p.age / 5);
+      for (const p of popByYear) {
+        const index = Math.floor(p.age / 5);
         popByGroups[index].population += p.population;
       }
       popByYearAndGroups.push(popByGroups);
@@ -168,7 +168,7 @@ export class PopulationService {
 
   public getMax(population: PopulationByGroups[][]): number {
     let max = 0;
-    for (let pop of population) {
+    for (const pop of population) {
       pop.map((p) => {
         if (p.population > max) {
           max = p.population;
@@ -177,34 +177,24 @@ export class PopulationService {
     }
     return max;
   }
-  public getMunicipalityName(id: number): string {
-    const pop = this.populationData.filter((p) => {
-      return p.municipality_number == id;
-    });
-    return pop[0]?.municipality;
-  }
 
-  public getMunicipalities(): Municipality[] {
+  /**
+   * Returns a list of all distinct municipalities with their id and name.
+   */
+  public getAllMunicipalities(): Municipality[] {
     return [
-      ...new Set(
-        this.populationData.map((p) => {
-          return JSON.stringify({
-            name: p.municipality,
-            id: p.municipality_number,
-          });
-        })
-      ),
-    ].map((m) => JSON.parse(m));
+      ...new Map(
+        this.populationData.map((item) => [
+          item.municipality,
+          {
+            name: item.municipality,
+            id: item.municipality_number,
+          },
+        ])
+      ).values(),
+    ];
   }
 
-  public getMunicipalityIdByName(name: string): number {
-    let municipalityIds = this.populationData.filter(
-      (p) => p.municipality === name
-    );
-    return municipalityIds.length > 0
-      ? municipalityIds[0].municipality_number
-      : 0;
-  }
   /**
    * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
    *
