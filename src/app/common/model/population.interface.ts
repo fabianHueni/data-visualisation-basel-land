@@ -51,3 +51,10 @@ export interface Municipality {
   id: number;
   name: string;
 }
+
+export interface PopulationBySex {
+  sex: number;
+  age: number;
+  year: number;
+  population: number;
+}

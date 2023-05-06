@@ -22,6 +22,7 @@ import { HeatmapComponent } from './heatmap/heatmap.component';
 import { FooterComponent } from './footer/footer.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ViolinplotComponent } from './violinplot/violinplot.component';
+import { HistogramComponent } from './histogram/histogram.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -43,6 +44,7 @@ function initializeApp(populationService: PopulationService) {
     ChoroplethComponent,
     FooterComponent,
     ViolinplotComponent,
+    HistogramComponent,
   ],
   imports: [
     BrowserModule,
