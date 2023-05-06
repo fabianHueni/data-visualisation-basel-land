@@ -10,6 +10,7 @@ import {
   select,
   group,
   max,
+  rollup,
 } from 'd3';
 import { mockData, Data } from './mockData';
 
@@ -23,7 +24,7 @@ export class ViolinplotComponent {
   private margin = { top: 10, right: 30, bottom: 30, left: 40 };
   private width = 460 - this.margin.left - this.margin.right;
   private height = 400 - this.margin.top - this.margin.bottom;
-  private data: Data = mockData;
+  private data: Data[] = mockData;
 
   ngAfterViewInit() {
     // append the svg object to the body of the page
@@ -38,7 +39,7 @@ export class ViolinplotComponent {
       );
 
     this.renderViolinplot();
-    this.drawPlot;
+    this.drawPlot();
   }
   // Build and Show the Y scale
   private y = scaleLinear<number>()
@@ -68,19 +69,22 @@ export class ViolinplotComponent {
 
   private drawPlot() {
     // Compute the binning for each group of the dataset
-    let sumstat = group('root', (d) => d.Species) // nest function allows to group the calculation per level of a factor
-      .rollup((d: any) => {
+    let sumstat = rollup(
+      this.data,
+      (d: any) => {
         // For each key..
-        let input = d.map((g) => {
+        let input = d.map((g: any) => {
           return g.Sepal_Length;
         }); // Keep the variable called Sepal_Length
-        let bins = bin(input); // And compute the binning on it.
+        let bins = bin(); // And compute the binning on it.
         return bins;
-      })
-      .entries(this.data);
+      },
+      (d) => d.Species
+    );
+    console.log(sumstat);
 
     // What is the biggest number of value in a bin? We need it cause this value will have a width of 100% of the bandwidth.
-    let maxNum = 0;
+    /*   let maxNum = 0;
     for (let i in sumstat) {
       let allBins = sumstat[i].value;
       let lengths: number[] = allBins.map((a) => {
@@ -126,5 +130,6 @@ export class ViolinplotComponent {
           })
           .curve(curveCatmullRom) // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
       );
+  } */
   }
 }
