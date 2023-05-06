@@ -16,6 +16,28 @@
 <p-card>
   <div class="flex justify-content-between mb-6">
     <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+    <div class="filters flex" *ngIf="selectedDataset.value === 'age-buckets'">
+      <span class="p-float-label">
+        <p-inputNumber
+          inputId="min-age"
+          [(ngModel)]="minAge"
+          [min]="0"
+          [max]="200"
+        >
+        </p-inputNumber>
+        <label htmlFor="min-age">Minimales Alter</label>
+      </span>
+      <span class="p-float-label">
+        <p-inputNumber
+          inputId="max-age"
+          [(ngModel)]="maxAge"
+          [min]="0"
+          [max]="200"
+        >
+        </p-inputNumber>
+        <label htmlFor="max-age">Maximales Alter</label>
+      </span>
+    </div>
     <p-selectButton
       [options]="datasets"
       [(ngModel)]="selectedDataset"
