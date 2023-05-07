@@ -70,7 +70,7 @@ export class HomeComponent {
           (1 / 20) * (this.getDataByShape(data) - 35)
         );
       },
-      colorScheme: interpolateOranges,
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipMedian,
       legendTitle: 'Medianalter in Jahren',
       min: 35,
@@ -91,7 +91,7 @@ export class HomeComponent {
           this.getDataByShape(data)?.percentageAgeGroup
         );
       },
-      colorScheme: interpolateGreens,
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipAgeBucket,
       legendTitle: 'Anteil der Altersklasse in Prozent',
       min: 0,
