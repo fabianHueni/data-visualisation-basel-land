@@ -22,6 +22,11 @@ import { HeatmapComponent } from './heatmap/heatmap.component';
 import { FooterComponent } from './footer/footer.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { LegendComponent } from './legend/legend.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { registerLocaleData } from '@angular/common';
+import localeCH from '@angular/common/locales/de-CH';
+import { KeyNumbersComponent } from './key-numbers/key-numbers.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -43,6 +48,7 @@ function initializeApp(populationService: PopulationService) {
     ChoroplethComponent,
     FooterComponent,
     LegendComponent,
+    KeyNumbersComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,6 +61,8 @@ function initializeApp(populationService: PopulationService) {
     SliderModule,
     SelectButtonModule,
     InputNumberModule,
+    RadioButtonModule,
+    FontAwesomeModule,
   ],
   providers: [
     PopulationService,
@@ -67,4 +75,8 @@ function initializeApp(populationService: PopulationService) {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    registerLocaleData(localeCH, 'de-CH');
+  }
+}

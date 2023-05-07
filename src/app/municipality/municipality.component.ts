@@ -12,6 +12,7 @@ import { Location } from '@angular/common';
 export class MunicipalityComponent implements OnInit {
   public municipalities: Municipality[] =
     this.popService.getAllMunicipalities();
+
   private _selectedMunicipality: Municipality = this.municipalities[0];
 
   constructor(
@@ -39,6 +40,7 @@ export class MunicipalityComponent implements OnInit {
     this._selectedMunicipality = municipality;
     this.location.replaceState('/gemeinde/' + this._selectedMunicipality.id);
   }
+
   public get selectedMunicipality(): Municipality {
     return this._selectedMunicipality;
   }

@@ -44,6 +44,16 @@ export class HomeComponent {
   );
 
   /**
+   * An array with all years from 2003 to 2022.
+   * These are the years we have data to display.
+   */
+  public sex = [
+    { label: 'Alle', value: 0 },
+    { label: 'Männer', value: 1 },
+    { label: 'Frauen', value: 2 },
+  ];
+
+  /**
    * An array with all datasets to show.
    */
   public datasets: Dataset[] = [
@@ -51,7 +61,10 @@ export class HomeComponent {
       label: 'Medianalter',
       value: 'median',
       data: (year: number) =>
-        this.populationService.getAgeMedianPerMunicipalityByYear(year),
+        this.populationService.getAgeMedianPerMunicipalityByYear(
+          year,
+          this.selectedSex
+        ),
       color: (data: any) => {
         return this.selectedDataset.colorScheme(
           (1 / 20) * (this.getDataByShape(data) - 35)
@@ -70,7 +83,8 @@ export class HomeComponent {
         this.populationService.getAgeGroupPerMunicipalityByYear(
           year,
           this.minAge,
-          this.maxAge
+          this.maxAge,
+          this.selectedSex
         ),
       color: (data: any) => {
         return this.selectedDataset.colorScheme(
@@ -87,7 +101,12 @@ export class HomeComponent {
       label: 'Betagte',
       value: 'seniors',
       data: (year: number) =>
-        this.populationService.getAgeGroupPerMunicipalityByYear(year, 65, 200),
+        this.populationService.getAgeGroupPerMunicipalityByYear(
+          year,
+          65,
+          200,
+          this.selectedSex
+        ),
       color: (data: any) => {
         return this.selectedDataset.colorScheme(
           (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
@@ -152,9 +171,26 @@ export class HomeComponent {
     return this._selectedYear;
   }
 
-  private _maxAge = 110;
+  public set selectedSex(sex: number) {
+    this._selectedSex = sex;
+    this.updateData();
+  }
+  public get selectedSex() {
+    return this._selectedSex;
+  }
+
+  private _maxAge = 100;
   private _minAge = 0;
   private _selectedYear = 2022;
+
+  /**
+   *  0 - All (Default)
+   *  1 - Male
+   *  2 - Female
+   *
+   * @private
+   */
+  private _selectedSex = 0;
   private _selectedDataSet = this.datasets[0];
 
   /**

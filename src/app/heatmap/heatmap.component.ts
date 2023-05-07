@@ -31,7 +31,6 @@ export class HeatmapComponent implements AfterViewInit {
     this.max = this.popService.getMax(this.data);
     this.readData(this.data);
   }
-
   public get id(): number {
     return this._id;
   }
