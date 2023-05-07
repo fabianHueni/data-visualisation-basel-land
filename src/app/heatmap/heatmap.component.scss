@@ -5,4 +5,10 @@
   h2 {
     margin-left: 24px;
   }
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
+    h2 {
+      margin-left: 0;
+    }
+  }
 }

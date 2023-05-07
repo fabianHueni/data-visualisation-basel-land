@@ -1,9 +1,19 @@
 .filters {
-  margin: 40px 0;
-
   p-inputnumber {
     //width: 40px;
     margin-right: 12px;
+  }
+
+  ::ng-deep .p-inputnumber-input {
+    width: 100px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  p-dropdown {
+    ::ng-deep .p-dropdown {
+      width: 100%;
+    }
   }
 }
 

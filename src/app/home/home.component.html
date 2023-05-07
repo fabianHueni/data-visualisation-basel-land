@@ -14,8 +14,8 @@
 </p>
 
 <p-card>
-  <div class="flex justify-content-between mb-6">
-    <div class="flex gap-6">
+  <div class="flex justify-content-between mb-6 gap-4 flex-column lg:flex-row">
+    <div class="flex gap-4 lg:gap-6 sm:flex-column flex-column lg:flex-row">
       <!-- Year selection-->
       <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
 
@@ -35,36 +35,43 @@
       </div>
     </div>
 
+    <!-- Age bucket selection -->
+    <div class="filters flex" *ngIf="selectedDataset.value === 'age-buckets'">
+      <span class="p-float-label">
+        <p-inputNumber
+          inputStyleClass="number-input-width"
+          inputStyle="width: 100px !important;"
+          inputId="min-age"
+          [(ngModel)]="minAge"
+          [min]="0"
+          [max]="200"
+        >
+        </p-inputNumber>
+        <label htmlFor="min-age">Minimales Alter</label>
+      </span>
+      <span class="p-float-label">
+        <p-inputNumber
+          inputId="max-age"
+          [(ngModel)]="maxAge"
+          [min]="0"
+          [max]="200"
+        >
+        </p-inputNumber>
+        <label htmlFor="max-age">Maximales Alter</label>
+      </span>
+    </div>
+
     <!-- Dataset selection-->
-    <p-selectButton
+    <!--    <p-selectButton
       [options]="datasets"
       [(ngModel)]="selectedDataset"
       optionLabel="label"
-    ></p-selectButton>
-  </div>
-
-  <!-- Age bucket selection -->
-  <div class="filters flex" *ngIf="selectedDataset.value === 'age-buckets'">
-    <span class="p-float-label">
-      <p-inputNumber
-        inputId="min-age"
-        [(ngModel)]="minAge"
-        [min]="0"
-        [max]="200"
-      >
-      </p-inputNumber>
-      <label htmlFor="min-age">Minimales Alter</label>
-    </span>
-    <span class="p-float-label">
-      <p-inputNumber
-        inputId="max-age"
-        [(ngModel)]="maxAge"
-        [min]="0"
-        [max]="200"
-      >
-      </p-inputNumber>
-      <label htmlFor="max-age">Maximales Alter</label>
-    </span>
+    ></p-selectButton>-->
+    <p-dropdown
+      [options]="datasets"
+      [(ngModel)]="selectedDataset"
+      optionLabel="label"
+    ></p-dropdown>
   </div>
 
   <!--  <p-slider

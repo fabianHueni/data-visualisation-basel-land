@@ -46,7 +46,7 @@ export class HeatmapComponent implements AfterViewInit {
     );
   public max = 1;
   private groups = AGE_GROUPS;
-  private margin = { top: 20, right: 25, bottom: 30, left: 60 };
+  private margin = { top: 20, right: 0, bottom: 30, left: 45 };
   private width = 1000 - this.margin.left - this.margin.right;
   private height = 700 - this.margin.top - this.margin.bottom;
   constructor(private popService: PopulationService) {}
