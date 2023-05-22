@@ -17,7 +17,15 @@
   <div class="flex justify-content-between mb-6 gap-4 flex-column lg:flex-row">
     <div class="flex gap-4 lg:gap-6 sm:flex-column flex-column lg:flex-row">
       <!-- Year selection-->
-      <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+      <div class="flex flex-wrap gap-3">
+        <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+        <p-button
+          [icon]="yearInterval === 0 ? 'pi pi-play' : 'pi pi-pause'"
+          (onClick)="toggleYearInterval()"
+          pTooltip="Jahre automatisch hochzählen"
+          tooltipPosition="bottom"
+        ></p-button>
+      </div>
 
       <!-- Sex selection -->
       <div class="flex flex-wrap gap-3">

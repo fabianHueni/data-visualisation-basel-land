@@ -53,6 +53,8 @@ export class HomeComponent {
     { label: 'Frauen', value: 2 },
   ];
 
+  public yearInterval = 0;
+
   /**
    * An array with all datasets to show.
    */
@@ -207,6 +209,25 @@ export class HomeComponent {
   public getColorScheme = (data: any) => {
     return this._selectedDataSet.color(data);
   };
+
+  /**
+   * Toggle the year interval to automatically increase the year.
+   * If the interval is already set then pause and remove the intervall. Otherwise, set the interval with 1.0 seconds.
+   */
+  public toggleYearInterval() {
+    if (this.yearInterval > 0) {
+      clearInterval(this.yearInterval);
+      this.yearInterval = 0;
+    } else {
+      this.yearInterval = setInterval(() => {
+        this._selectedYear = this._selectedYear + 1;
+        if (this._selectedYear > 2022) {
+          this._selectedYear = 2003;
+        }
+        this.updateData();
+      }, 1000);
+    }
+  }
 
   private updateData() {
     this.populationData = this._selectedDataSet.data(this._selectedYear);
