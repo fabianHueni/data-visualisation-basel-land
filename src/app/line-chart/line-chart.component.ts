@@ -11,18 +11,14 @@ import {
   axisLeft,
   bisector,
   curveMonotoneX,
-  extent,
-  InternMap,
   line,
-  max,
-  min,
   scaleLinear,
   select,
 } from 'd3';
 import { Selection } from 'd3-selection';
 import { Subject } from 'rxjs';
 import { v4 as uuid } from 'uuid';
-import { Line } from 'd3-shape';
+import { LineChartData, LineChartKey } from './line-chart-data-interface';
 
 @Component({
   selector: 'app-line-chart',
@@ -46,14 +42,12 @@ export class LineChartComponent implements AfterViewInit {
    * The data to display.
    */
   @Input()
-  set data(data: InternMap[]) {
-    this._data = Array.from(data as unknown as Map<number, number>, (d) => {
-      return { year: d[0], value: d[1] };
-    });
-    this._data.sort((a, b) => a.year - b.year);
+  set data(data: Map<LineChartKey, LineChartData[]>) {
+    this._data = data;
+    this.redraw();
   }
 
-  private _data: { year: number; value: number }[] = [];
+  private _data: Map<LineChartKey, LineChartData[]> = new Map();
 
   /**
    * A subject to get notified when to redraw the map.
@@ -151,7 +145,7 @@ export class LineChartComponent implements AfterViewInit {
 
     // add Y axis
     this.yScale = scaleLinear()
-      .domain([40, 50])
+      .domain([0, 1])
       .range([this.height - 2 * this.margin, 0]);
     svgInner
       .append('g')
@@ -164,18 +158,21 @@ export class LineChartComponent implements AfterViewInit {
       .y((d) => d[1])
       .curve(curveMonotoneX);
 
-    const points: [number, number][] = this._data.map((d) => [
-      this.xScale(d.year),
-      this.yScale(d.value),
-    ]);
+    this._data.forEach((value, key) => {
+      const points: [number, number][] = value.map((d) => [
+        this.xScale(d.year),
+        this.yScale(d.value),
+      ]);
 
-    svgInner
-      .append('path')
-      .attr('d', lineGenerator(points))
-      .attr('id', 'line')
-      .style('fill', 'none')
-      .style('stroke', 'red')
-      .style('stroke-width', '2px');
+      svgInner
+        .data(this._data)
+        .append('path')
+        .attr('d', lineGenerator(points))
+        .attr('id', 'line')
+        .style('fill', 'none')
+        .style('stroke', key.color)
+        .style('stroke-width', '2px');
+    });
 
     // catch mouse events
     svgInner
@@ -213,8 +210,8 @@ export class LineChartComponent implements AfterViewInit {
     }).left;
 
     const x0 = this.xScale.invert(event.x);
-    const i = bisect(this._data, x0, 1);
-    const selectedData = this._data[i];
+    const i = 1; // bisect(this._data.get('median'), x0, 1);
+    const selectedData = { year: 2000, value: 2 }; // this._data[i];
 
     console.log(this.yScale(selectedData?.value));
     this.tooltipData = selectedData;
