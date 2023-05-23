@@ -27,7 +27,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { registerLocaleData } from '@angular/common';
 import localeCH from '@angular/common/locales/de-CH';
 import { KeyNumbersComponent } from './key-numbers/key-numbers.component';
-import {ButtonModule} from "primeng/button";
+import { ButtonModule } from 'primeng/button';
+import { LineChartComponent } from './line-chart/line-chart.component';
+import { DevelopmentOverTimeComponent } from './municipality/development-over-time/development-over-time.component';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -50,6 +52,8 @@ function initializeApp(populationService: PopulationService) {
     FooterComponent,
     LegendComponent,
     KeyNumbersComponent,
+    LineChartComponent,
+    DevelopmentOverTimeComponent,
   ],
   imports: [
     BrowserModule,

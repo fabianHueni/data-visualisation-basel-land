@@ -1,0 +1,16 @@
+<div [id]="plotId" #lineChartWrapper>
+  <svg [id]="plotId + '-line-chart'"></svg>
+
+  <div [id]="plotId + '-tooltip'" class="tooltip">
+    <div>
+      <p>Jahr: {{ tooltipData?.year }}</p>
+      <p>Wert: {{ tooltipData?.value }}</p>
+    </div>
+    <ng-container
+      *ngTemplateOutlet="
+        tooltipTemplate ?? null;
+        context: { data: tooltipData }
+      "
+    ></ng-container>
+  </div>
+</div>

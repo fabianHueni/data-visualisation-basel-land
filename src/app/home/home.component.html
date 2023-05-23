@@ -22,6 +22,7 @@
         <p-button
           [icon]="yearInterval === 0 ? 'pi pi-play' : 'pi pi-pause'"
           (onClick)="toggleYearInterval()"
+          styleClass="p-button-outlined"
           pTooltip="Jahre automatisch hochzählen"
           tooltipPosition="bottom"
         ></p-button>
@@ -82,12 +83,6 @@
     ></p-dropdown>
   </div>
 
-  <!--  <p-slider
-    [(ngModel)]="selectedYear"
-    [step]="1"
-    [min]="2003"
-    [max]="2022"
-  ></p-slider>-->
   <app-legend
     [title]="selectedDataset.legendTitle"
     [min]="selectedDataset.min"

@@ -63,7 +63,6 @@ export class PopulationService {
       (v) => this.calcMedian(v),
       (d) => d.municipality_number
     );
-    console.log(res);
     return res;
   }
 
@@ -89,6 +88,21 @@ export class PopulationService {
       ),
       (v) => this.calcAgeBucketPercentageRate(v, minAge, maxAge),
       (d) => d.municipality_number
+    );
+  }
+
+  /**
+   * Returns the percentage of an age group for all municipalities by a given year.
+   *
+   * @param municipalityId The municipality id to calculate the medians for
+   */
+  public getMedianAgePerYearByMunicipality(municipalityId: number): InternMap {
+    return rollup(
+      this.populationData.filter((entry: Population) => {
+        return entry.municipality_number === municipalityId;
+      }),
+      (v) => this.calcMedian(v),
+      (d) => d.year
     );
   }
 
