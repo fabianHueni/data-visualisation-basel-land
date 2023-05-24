@@ -2,6 +2,10 @@ import { AfterViewInit, Component, Input, OnChanges } from '@angular/core';
 import { interpolateBlues, select } from 'd3';
 import { v4 as uuid } from 'uuid';
 import { Subject } from 'rxjs';
+import {
+  LineChartData,
+  LineChartKey,
+} from '../line-chart/line-chart-data-interface';
 
 @Component({
   selector: 'app-legend',
@@ -23,6 +27,9 @@ export class LegendComponent implements AfterViewInit, OnChanges {
   @Input()
   public colorScheme = interpolateBlues;
 
+  @Input()
+  public lineData: Map<LineChartKey, LineChartData[]> = new Map();
+
   ngAfterViewInit() {
     this.drawLegend();
   }
@@ -31,11 +38,19 @@ export class LegendComponent implements AfterViewInit, OnChanges {
     this.drawLegend();
   }
 
+  private drawLegend() {
+    if (this.lineData.size > 0) {
+      this.drawLineChartLegend();
+    } else {
+      this.drawDiscreteLegend();
+    }
+  }
+
   /**
    * Draws a legend to the top right of the choropleth.
    * @private
    */
-  private drawLegend() {
+  private drawDiscreteLegend() {
     // remove already available legend
     select('#' + this.svgId)
       .selectAll('*')
@@ -86,6 +101,50 @@ export class LegendComponent implements AfterViewInit, OnChanges {
       .text(this.max)
       .style('font-size', ' 14px')
       .style('font-family', 'roboto')
+      .attr('text-anchor', 'left');
+  }
+
+  /**
+   * Draws a legend for a line chart with corresponding line items depending on the {@link LegendComponent#lineData}.
+   * @private
+   */
+  private drawLineChartLegend() {
+    // remove already available legend
+    select('#' + this.svgId)
+      .selectAll('*')
+      .remove();
+
+    // legend items as line segments
+    const legendItemWidth = 150;
+    const lineHeight = 4;
+    const lineWidth = 25;
+    select('#' + this.svgId)
+      .attr('width', 500)
+      .attr('height', 20)
+      .selectAll('legendLine')
+      .data(this.lineData.keys())
+      .enter()
+      .append('rect')
+      .attr('y', 14)
+      .attr('x', (d, i) => {
+        return i * legendItemWidth;
+      })
+      .attr('height', lineHeight)
+      .attr('width', lineWidth)
+      .style('fill', (d) => d.color.toString());
+
+    select('#' + this.svgId)
+      .selectAll('legendLabel')
+      .data(this.lineData.keys())
+      .enter()
+      .append('text')
+      .attr('y', 20)
+      .attr('x', (d, i) => {
+        return i * legendItemWidth + lineWidth + 5; // 5px padding
+      })
+      .text((d) => d.label)
+      .style('font-family', 'roboto')
+      .style('font-size', ' 14px')
       .attr('text-anchor', 'left');
   }
 }

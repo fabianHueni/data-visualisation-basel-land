@@ -155,8 +155,8 @@ export class LineChartComponent implements AfterViewInit {
 
     const lineGenerator = line()
       .x((d) => d[0])
-      .y((d) => d[1])
-      .curve(curveMonotoneX);
+      .y((d) => d[1]);
+    // .curve(curveMonotoneX);
 
     this._data.forEach((value, key) => {
       const points: [number, number][] = value.map((d) => [

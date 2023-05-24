@@ -29,6 +29,7 @@ export class DevelopmentOverTimeComponent {
     this.data.set(
       {
         key: 'youth',
+        label: 'Jugendquotient',
         color: '#006600',
       },
       this.populationService.getYouthQuotientAgePerYearByMunicipality(
@@ -39,7 +40,8 @@ export class DevelopmentOverTimeComponent {
     this.data.set(
       {
         key: 'senior',
-        color: '#000030',
+        label: 'Altersquotient',
+        color: '#000000',
       },
       this.populationService.getSeniorQuotientAgePerYearByMunicipality(
         municipalityId
@@ -48,6 +50,7 @@ export class DevelopmentOverTimeComponent {
     this.data.set(
       {
         key: 'full',
+        label: 'Gesamtquotient',
         color: '#496f9e',
       },
       this.populationService.getFullQuotientAgePerYearByMunicipality(

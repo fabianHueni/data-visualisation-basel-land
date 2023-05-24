@@ -5,5 +5,6 @@ export interface LineChartData {
 
 export interface LineChartKey {
   key: string;
+  label: string;
   color: string;
 }
