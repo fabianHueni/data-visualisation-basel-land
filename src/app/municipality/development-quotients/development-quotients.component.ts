@@ -6,11 +6,11 @@ import {
 } from '../../line-chart/line-chart-data-interface';
 
 @Component({
-  selector: 'app-development-over-time',
-  templateUrl: './development-over-time.component.html',
-  styleUrls: ['./development-over-time.component.scss'],
+  selector: 'app-development-quotients',
+  templateUrl: './development-quotients.component.html',
+  styleUrls: ['./development-quotients.component.scss'],
 })
-export class DevelopmentOverTimeComponent {
+export class DevelopmentQuotientsComponent {
   @Input()
   set selectedMunicipalityId(municipalityId: number) {
     this.data = new Map<LineChartKey, LineChartData[]>();

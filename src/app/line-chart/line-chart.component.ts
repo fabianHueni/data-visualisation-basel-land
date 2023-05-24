@@ -12,6 +12,8 @@ import {
   bisector,
   curveMonotoneX,
   line,
+  max,
+  min,
   scaleLinear,
   select,
 } from 'd3';
@@ -78,13 +80,13 @@ export class LineChartComponent implements AfterViewInit {
    * The width of the svg-canvas. Depends on the available space.
    * @private
    */
-  private width = 600;
+  private width = 0;
 
   /**
    * The height of the svg-canvas. Depends on the available space.
    * @private
    */
-  private height = 600;
+  private height = 0;
 
   private margin = 25;
 
@@ -93,6 +95,7 @@ export class LineChartComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.width = this.lineChartWrapper?.nativeElement.offsetWidth;
+    this.height = this.width / 2;
     this.constructTooltip();
     this.setupLineChart();
 
@@ -123,7 +126,7 @@ export class LineChartComponent implements AfterViewInit {
    */
   private redraw() {
     const svgInner = select('#' + this.plotId + 'line-chart-inner');
-    svgInner.selectAll('path').remove();
+    svgInner.selectAll('*').remove();
 
     // add X axis
     this.xScale = scaleLinear()
@@ -145,13 +148,25 @@ export class LineChartComponent implements AfterViewInit {
 
     // add Y axis
     this.yScale = scaleLinear()
-      .domain([0, 1])
+      .domain(this.getYDomain())
       .range([this.height - 2 * this.margin, 0]);
+
+    // append y-axis and the horizontal strips to the svg
     svgInner
       .append('g')
       .attr('id', 'y-axis')
       .call(axisLeft(this.yScale))
-      .style('transform', 'translate(' + this.margin + 'px,  0)');
+      .style('transform', 'translate(' + this.margin + 'px,  0)')
+      .style('color', '#dddddd')
+      .call((g) => g.select('.domain').remove()) // remove vertical line for y-axis
+      .call((g) => g.selectAll('.tick text').style('color', '#757575')) // remove vertical line for y-axis
+      .call((g) =>
+        g
+          .selectAll('.tick line')
+          .clone() // horizontal lines per y-axis-label
+          // the yAxisPadding is added because it is needed to compensate the gap in the left
+          .attr('x2', this.width - this.margin - this.margin)
+      );
 
     const lineGenerator = line()
       .x((d) => d[0])
@@ -181,10 +196,13 @@ export class LineChartComponent implements AfterViewInit {
       .style('pointer-events', 'all')
       .attr('x', this.margin)
       .attr('width', this.width - 2 * this.margin)
-      .attr('height', this.height - 2 * this.margin)
+      .attr('height', this.height - 2 * this.margin);
+
+    /*
       .on('mouseover', this.mouseover.bind(this))
       .on('mousemove', this.mousemove.bind(this))
       .on('mouseout', this.mouseout.bind(this));
+     */
   }
 
   /**
@@ -244,5 +262,20 @@ export class LineChartComponent implements AfterViewInit {
       .style('border-width', '2px')
       .style('border-radius', '5px')
       .style('padding', '5px');
+  }
+
+  /**
+   * Get the domain for the y-axis. We use as the domain the min and max value with an appropriated padding.
+   * We add 5% padding to the min and max value.
+   * @private
+   */
+  private getYDomain(): number[] {
+    const allValues: number[] = [];
+
+    for (const value of this._data.values()) {
+      allValues.push(...value.map((d) => d.value));
+    }
+
+    return [(min(allValues) ?? 0) * 0.95, (max(allValues) ?? 1) * 1.05];
   }
 }
