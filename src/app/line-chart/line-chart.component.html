@@ -3,8 +3,8 @@
 
   <div [id]="plotId + '-tooltip'" class="tooltip">
     <div>
-      <p>Jahr: {{ tooltipData?.year }}</p>
-      <p>Wert: {{ tooltipData?.value }}</p>
+      Jahr: {{ tooltipData?.year }} <br />
+      Wert: {{ tooltipData?.value | number : "1.0-2" }}<br />
     </div>
     <ng-container
       *ngTemplateOutlet="

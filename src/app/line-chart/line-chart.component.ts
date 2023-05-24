@@ -14,6 +14,7 @@ import {
   line,
   max,
   min,
+  pointer,
   scaleLinear,
   select,
 } from 'd3';
@@ -189,6 +190,8 @@ export class LineChartComponent implements AfterViewInit {
         .style('stroke-width', '2px');
     });
 
+    this.addMouseEvents(svgInner);
+
     // catch mouse events
     svgInner
       .append('rect')
@@ -203,6 +206,62 @@ export class LineChartComponent implements AfterViewInit {
       .on('mousemove', this.mousemove.bind(this))
       .on('mouseout', this.mouseout.bind(this));
      */
+  }
+
+  private addMouseEvents(svg: any) {
+    // hover event emitter function which generates a hover indicator at the
+    // x-coordinate or when the xValues are given at the nearest xValue
+    // the user is currently hovering and emits an event with
+    // information about the x-coordinate and the hover-indicator
+    const pointerMoved = (event: any): void => {
+      const [xm, ym] = pointer(event);
+      console.log(event);
+      console.log(pointer(event));
+      // the x value which lies within the dimension
+      const year = Math.round(this.xScale.invert(xm));
+
+      // the y value which lies within the dimension
+      const yValue = this.yScale.invert(ym);
+
+      // if the x-values are given, the closest x-value is given as position
+      // this makes the application of a tooltip easier
+      // xValue = this.findClosestValue(this.xScale.invert(xm));
+
+      // remove old hover indicator
+      svg.select('#' + 'hover-indicator').remove();
+
+      svg
+        .append('rect')
+        .attr('id', 'hover-indicator')
+        .attr('x', this.xScale(year))
+        .attr('y', 0)
+        .attr('height', this.height - 2 * this.margin)
+        .attr('width', 2)
+        .attr('fill', '#494949')
+        .attr('opacity', 0.3)
+        // move the rect to the center of the ticks
+        .attr('transform', `translate(-1,0)`);
+
+      const indicatorRect = document
+        .getElementById('hover-indicator')
+        ?.getBoundingClientRect();
+
+      this.tooltipData = { year: year, value: yValue };
+
+      this.tooltip?.style('display', 'block');
+      this.tooltip
+        ?.style('left', event.pageX + 'px')
+        .style('top', event.pageY + 'px');
+    };
+
+    // hover event emitter function is applied here
+    svg.on('pointermove', pointerMoved);
+    // apply event listener for removing the hover indicator
+    // when the user leaves the chart
+    svg.on('mouseleave', () => {
+      svg.select('#' + 'hover-indicator').remove();
+      this.tooltip?.style('display', 'none');
+    });
   }
 
   /**
@@ -256,7 +315,8 @@ export class LineChartComponent implements AfterViewInit {
    */
   private constructTooltip() {
     this.tooltip = select('#' + this.plotId + '-tooltip')
-      .style('opacity', 0)
+      .style('opacity', 1)
+      .style('display', 'none')
       .style('background-color', 'white')
       .style('border', 'solid')
       .style('border-width', '2px')
@@ -277,5 +337,9 @@ export class LineChartComponent implements AfterViewInit {
     }
 
     return [(min(allValues) ?? 0) * 0.95, (max(allValues) ?? 1) * 1.05];
+  }
+
+  private findClosestValue(x: number) {
+    this._data;
   }
 }
