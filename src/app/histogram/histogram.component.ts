@@ -109,7 +109,8 @@ export class HistogramComponent {
       .range([this.margin + 10, this.width - this.margin - 10]);
     this.yGroup = scaleBand()
       .range([this.height - this.margin, this.margin])
-      .domain(this.ageGroup);
+      .domain(this.ageGroup)
+      .padding(0.05);
     this.drawBarsGroups();
   }
 
@@ -188,7 +189,7 @@ export class HistogramComponent {
       .attr('x', this.x(0))
       .attr('y', (d: Population) => this.y(d.age))
       .attr('width', (d: Population) => this.x(d.population) - this.x(0))
-      .attr('height', (d: Population) => this.height / 100)
+      .attr('height', this.height / 100 - 1)
       .attr('fill', '#6A82DF')
       .on('mouseover', (event: MouseEvent) => {
         this.mouseover(event);
@@ -214,7 +215,7 @@ export class HistogramComponent {
       .attr('x', (d: Population) => this.x(-d.population))
       .attr('y', (d: Population) => this.y(d.age))
       .attr('width', (d: Population) => this.x(0) - this.x(-d.population))
-      .attr('height', this.height / 100)
+      .attr('height', this.height / 100 - 1)
       .attr('fill', 'pink')
       .on('mouseover', (event: MouseEvent) => {
         this.mouseover(event);
