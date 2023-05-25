@@ -342,48 +342,8 @@ export class PopulationService {
     year: number,
     municipality_number: number
   ): Population[] {
-    let data = this.getPopulationDataPerMunicipality(
-      municipality_number
-    ).filter((p: Population) => p.year === year);
-    for (let age = 1; age < 102; age++) {
-      let filteredData = data.filter((d) => d.age === age);
-      if (filteredData.length < 1) {
-        data.push({
-          age: age,
-          municipality_number: municipality_number,
-          municipality: '',
-          year: year,
-          population: 0,
-          sex: 1,
-        });
-        data.push({
-          age: age,
-          municipality_number: municipality_number,
-          municipality: '',
-          year: year,
-          population: 0,
-          sex: 2,
-        });
-      } else if (filteredData.length === 1 && filteredData[0].sex === 1) {
-        data.push({
-          age: age,
-          municipality_number: municipality_number,
-          municipality: '',
-          year: year,
-          population: 0,
-          sex: 2,
-        });
-      } else if (filteredData.length === 1 && filteredData[0].sex === 2) {
-        data.push({
-          age: age,
-          municipality_number: municipality_number,
-          municipality: '',
-          year: year,
-          population: 0,
-          sex: 1,
-        });
-      }
-    }
-    return data;
+    return this.getPopulationDataPerMunicipality(municipality_number).filter(
+      (p: Population) => p.year === year
+    );
   }
 }
