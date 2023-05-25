@@ -1,10 +1,6 @@
 .histogram-info {
-  display: flex;
-  justify-content: space-between;
+  margin-left: 24px;
 
-  h2 {
-    margin-left: 24px;
-  }
   @media screen and (max-width: 800px) {
     flex-direction: column;
     h2 {

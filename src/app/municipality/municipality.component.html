@@ -9,17 +9,37 @@
   ></p-dropdown>
 </h1>
 
-<p></p>
+<p>
+  Zur genaueren Analyse werden auf dieser Seite, die Daten einer einzelnen
+  Gemeinde dargestellt. Sie können die Gemeinde im Dorpdownmenu im Titel
+  wechseln.
+</p>
 
 <app-key-numbers [municipalityId]="selectedMunicipality.id"></app-key-numbers>
 
 <p-card>
-  <app-heatmap [id]="selectedMunicipality.id"></app-heatmap>
+  <app-heatmap [id]="selectedMunicipality.id">
+    <p>
+      Diese Heatmap Grafik zeigt die Altersverteilung in 5-Jahresklassen pro
+      Kalenderjahr seit 2003 an. Je dunkler die Farbe, desto mehr Personen mit
+      einem Alter in dieser Altersklasse Alters leben in der Gemeinde
+      {{ selectedMunicipality.name }}.
+    </p>
+  </app-heatmap>
 </p-card>
 
 <div class="card">
   <p-card>
-    <app-histogram [id]="selectedMunicipality.id"></app-histogram>
+    <app-histogram [id]="selectedMunicipality.id">
+      <p>
+        Dieses zweiseitige Histogramm zeigt die Altersverteilung für die
+        Gemeinde
+        {{ selectedMunicipality.name }} für ein Kalenderjahr an, aufgeteilt nach
+        Geschlecht. Dabei kann das Jahr sowie die Altersunterteilung ausgewählt
+        werden. Das Farbschema ist klassisch gewählt: Rosa = Frauen, Blau =
+        Männer.
+      </p>
+    </app-histogram>
   </p-card>
 </div>
 
