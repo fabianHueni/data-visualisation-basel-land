@@ -24,13 +24,18 @@ export class HistogramComponent {
   private height = 400 - this.margin * 2;
 
   // Create the X-axis band scale
-  private x = scaleBand()
-    .range([0, this.width])
-    .domain(this.population.map((d) => `${d.age}`))
-    .padding(0.2);
+  private x = scaleLinear().domain([-50, 50]).range([0, this.width]);
+  //.tickFormat((d: number) =>{return `${Math.abs(d)}`});
 
   // Create the Y-axis band scale
-  private y = scaleLinear().domain([0, 40]).range([this.height, 0]);
+  private y = scaleBand()
+    .range([0, this.height])
+    .domain(
+      this.population.map(function (p) {
+        return `${p.age}`;
+      })
+    )
+    .padding(0.1);
 
   ngOnInit(): void {
     this.createSvg();
@@ -50,7 +55,9 @@ export class HistogramComponent {
     this.svg
       .append('g')
       .attr('transform', 'translate(0,' + this.height + ')')
-      .call(axisBottom(this.x))
+      .call(
+        axisBottom(this.x).tickFormat((d) => Math.abs(d as number).toString())
+      )
       .selectAll('text')
       .attr('transform', 'translate(-10,0)rotate(-45)')
       .style('text-anchor', 'end');
@@ -70,13 +77,10 @@ export class HistogramComponent {
       .data(data)
       .enter()
       .append('rect')
-      .attr('x', (d: PopulationBySex) => this.x(`${d.age}`))
-      .attr('y', (d: PopulationBySex) => this.y(d.population))
-      .attr('width', this.x.bandwidth())
-      .attr(
-        'height',
-        (d: PopulationBySex) => this.height - this.y(d.population)
-      )
+      .attr('x', this.x(0))
+      .attr('y', (d: PopulationBySex) => this.y(`${d.age}`))
+      .attr('width', (d: PopulationBySex) => this.x(d.population) - this.x(0))
+      .attr('height', (d: PopulationBySex) => this.y.bandwidth())
       .attr('fill', 'blue');
   }
 
@@ -89,13 +93,11 @@ export class HistogramComponent {
       .data(data)
       .enter()
       .append('rect')
-      .attr('x', (d: PopulationBySex) => this.x(`${d.age}`))
-      .attr('y', (d: PopulationBySex) => this.y(d.population))
-      .attr('width', this.x.bandwidth())
-      .attr(
-        'height',
-        (d: PopulationBySex) => this.height - this.y(d.population)
-      )
+      .attr('class', 'bar negative')
+      .attr('x', (d: PopulationBySex) => this.x(-d.population))
+      .attr('y', (d: PopulationBySex) => this.y(`${d.age}`))
+      .attr('width', (d: PopulationBySex) => this.x(0) - this.x(-d.population))
+      .attr('height', (d: PopulationBySex) => this.y.bandwidth())
       .attr('fill', 'pink');
   }
 }
