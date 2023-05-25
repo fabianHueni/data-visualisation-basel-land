@@ -17,9 +17,12 @@
   <app-heatmap [id]="selectedMunicipality.id"></app-heatmap>
 </p-card>
 
-<p-card>
-  <app-histogram [id]="selectedMunicipality.id"></app-histogram>
-</p-card>
+<div class="card">
+  <p-card>
+    <app-histogram [id]="selectedMunicipality.id"></app-histogram>
+  </p-card>
+</div>
+
 <div class="chart-grid" [style]="'height: 100%'">
   <p-card>
     <app-development-quotients
