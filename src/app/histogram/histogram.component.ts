@@ -15,7 +15,7 @@ export class HistogramComponent {
 
   private population: Population[] = [];
   private svg: any;
-  private margin = 50;
+  private margin = 20;
   private width = 1000 - this.margin * 2;
   private height = 750 - this.margin * 2;
 
@@ -23,7 +23,9 @@ export class HistogramComponent {
   private x = scaleLinear().domain([-1000, 1000]).range([0, this.width]);
 
   // Create the Y-axis band scale
-  private y = scaleLinear().range([this.height, 0]).domain([0, 100]);
+  private y = scaleLinear()
+    .range([this.height - this.margin, this.margin])
+    .domain([0, 100]);
 
   @Input()
   public set id(id: number) {
@@ -63,7 +65,9 @@ export class HistogramComponent {
     console.log(this.population);
     const maxPopulation = max(this.population.map((entry) => entry.population));
     this.max = maxPopulation ? maxPopulation : 0;
-    this.x = scaleLinear().domain([-this.max, this.max]).range([0, this.width]);
+    this.x = scaleLinear()
+      .domain([-this.max, this.max])
+      .range([this.margin, this.width - this.margin]);
     this.drawBars(this.population);
   }
 
