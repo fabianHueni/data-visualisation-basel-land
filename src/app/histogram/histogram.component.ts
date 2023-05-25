@@ -56,14 +56,23 @@ export class HistogramComponent {
       .append('g')
       .attr('transform', 'translate(0,' + this.height + ')')
       .call(
-        axisBottom(this.x).tickFormat((d) => Math.abs(d as number).toString())
+        axisBottom(this.x)
+          .tickSize(0)
+          .tickFormat((d) => Math.abs(d as number).toString())
       )
+      .select('.domain')
+      .remove()
       .selectAll('text')
       .attr('transform', 'translate(-10,0)rotate(-45)')
       .style('text-anchor', 'end');
 
     // Draw the Y-axis on the DOM
-    this.svg.append('g').call(axisLeft(this.y));
+    this.svg
+      .append('g')
+      .attr('transform', 'translate(' + this.x(1) + ',0)')
+      .call(axisLeft(this.y).tickSize(0))
+      .select('.domain')
+      .remove();
 
     this.drawBarsM(data);
     this.drawBarsF(data);
@@ -77,9 +86,12 @@ export class HistogramComponent {
       .data(data)
       .enter()
       .append('rect')
-      .attr('x', this.x(0))
+      .attr('x', this.x(5))
       .attr('y', (d: PopulationBySex) => this.y(`${d.age}`))
-      .attr('width', (d: PopulationBySex) => this.x(d.population) - this.x(0))
+      .attr(
+        'width',
+        (d: PopulationBySex) => this.x(d.population - 5) - this.x(0)
+      )
       .attr('height', (d: PopulationBySex) => this.y.bandwidth())
       .attr('fill', 'blue');
   }
@@ -96,7 +108,7 @@ export class HistogramComponent {
       .attr('class', 'bar negative')
       .attr('x', (d: PopulationBySex) => this.x(-d.population))
       .attr('y', (d: PopulationBySex) => this.y(`${d.age}`))
-      .attr('width', (d: PopulationBySex) => this.x(0) - this.x(-d.population))
+      .attr('width', (d: PopulationBySex) => this.x(-5) - this.x(-d.population))
       .attr('height', (d: PopulationBySex) => this.y.bandwidth())
       .attr('fill', 'pink');
   }
