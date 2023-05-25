@@ -52,6 +52,11 @@ export interface PopulationByGroups {
    * The number of persons who live in this municipality and are {@link age} years old.
    */
   population: number;
+
+  /**
+   * sex
+   */
+  sex?: number;
 }
 
 export interface Municipality {

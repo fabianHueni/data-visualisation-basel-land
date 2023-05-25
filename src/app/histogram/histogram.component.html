@@ -1,4 +1,17 @@
 <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+<div class="flex gap-4 lg:gap-6 sm:flex-column flex-column lg:flex-row">
+  <div class="flex flex-wrap gap-3">
+    <div class="flex align-items-center" *ngFor="let item of ageGroups">
+      <p-radioButton
+        [name]="item.label"
+        [value]="item.value"
+        [(ngModel)]="selectedAgeGroup"
+      ></p-radioButton>
+      <label [for]="'sex-' + item.value" class="ml-2">{{ item.label }}</label>
+    </div>
+  </div>
+</div>
+
 <div #heatmapWrapper>
   <svg id="histogram_canvas"></svg>
   <div id="'tooltip'" class="tooltip">
