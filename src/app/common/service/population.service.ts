@@ -4,6 +4,7 @@ import {
   Municipality,
   Population,
   PopulationByGroups,
+  PopulationBySex,
 } from '../model/population.interface';
 
 export const AGE_GROUPS: string[] = [
@@ -63,7 +64,6 @@ export class PopulationService {
       (v) => this.calcMedian(v),
       (d) => d.municipality_number
     );
-    console.log(res);
     return res;
   }
 
@@ -337,5 +337,14 @@ export class PopulationService {
     return this.getPopulationDataPerMunicipality(municipalityId)
       .filter((entry: Population) => entry.year === year && entry.age >= 65)
       .reduce((a, b) => a + b.population, 0);
+  }
+
+  public getPopulationByYearAndMunicipality(
+    year: number,
+    municipality_number: number
+  ): Population[] {
+    return this.getPopulationDataPerMunicipality(municipality_number).filter(
+      (p: Population) => p.year === year
+    );
   }
 }
