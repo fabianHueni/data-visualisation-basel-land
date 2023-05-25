@@ -8,13 +8,7 @@ import {
 } from '@angular/core';
 import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
-import {
-  geoPath,
-  geoTransform,
-  interpolateBlues,
-  scaleLinear,
-  select,
-} from 'd3';
+import { geoPath, geoTransform, scaleLinear, select } from 'd3';
 import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
 import { Router } from '@angular/router';
@@ -137,43 +131,35 @@ export class ChoroplethComponent implements AfterViewInit {
       .attr('fill', (d) => {
         return this.colorCallback(d);
       })
-      .on('mouseover', (event: MouseEvent) => {
-        this.mouseover(event);
-      })
-      .on('mouseout', (event: MouseEvent) => {
-        this.mouseleave(event);
+      .on('mouseover', (event: MouseEvent, data: any) => {
+        this.mouseHover(event, data);
       })
       .on('mousemove', (event: MouseEvent, data: any) =>
-        this.mousemove(event, data)
+        this.mouseHover(event, data)
       )
+      .on('mouseout', (event: MouseEvent) => {
+        this.mouseLeave(event);
+      })
       .on('click', (event: MouseEvent, data: any) => {
         this.router.navigate(['gemeinde', data.properties.gemeinde_id_bfs]);
       });
   }
 
   /**
-   * Show the tooltip when the mouse is over a shape and restyle the border (stroke) of the current shape.
-   *
-   * @param event The mouse event to get the current target and therefore the correct shape.
-   * @private
-   */
-  private mouseover(event: MouseEvent) {
-    this.tooltip?.style('opacity', 1);
-
-    // @ts-ignore
-    select(event.currentTarget)
-      .style('stroke', 'black')
-      .style('stroke-width', 3);
-  }
-
-  /**
-   * When the mouse move, update the tooltip text with the correct data and set the new position of the tooltip.
+   * When the mouse hover a shape, update the tooltip text with the correct data and set the new position of the tooltip.
    *
    * @param event The mouse event to get the current position of the mouse
    * @param data The feature of the hovered shape from the geojson file
    * @private
    */
-  private mousemove(event: MouseEvent, data: any) {
+  private mouseHover(event: MouseEvent, data: any) {
+    this.tooltip?.style('display', 'block');
+
+    // @ts-ignore
+    select(event.currentTarget)
+      .style('stroke', 'black')
+      .style('stroke-width', 3);
+
     this.tooltipData = data;
     this.tooltip
       ?.style('left', event.pageX + 15 + 'px')
@@ -186,8 +172,8 @@ export class ChoroplethComponent implements AfterViewInit {
    * @param event Mouse Event to get the current target of the mouse
    * @private
    */
-  private mouseleave(event: MouseEvent) {
-    this.tooltip?.style('opacity', 0);
+  private mouseLeave(event: MouseEvent) {
+    this.tooltip?.style('display', 'none');
 
     // @ts-ignore
     select(event.currentTarget)
@@ -225,7 +211,8 @@ export class ChoroplethComponent implements AfterViewInit {
    */
   private constructTooltip() {
     this.tooltip = select('#' + this.plotId + '-tooltip')
-      .style('opacity', 0)
+      .style('opacity', 1)
+      .style('display', 'none')
       .style('background-color', 'white')
       .style('border', 'solid')
       .style('border-width', '2px')

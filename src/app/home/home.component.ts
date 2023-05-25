@@ -1,7 +1,7 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { PopulationService } from '../common/service/population.service';
 import { Subject } from 'rxjs';
-import { interpolateBlues } from 'd3';
+import { interpolateBlues, max, min } from 'd3';
 import { Dataset } from '../common/model/dataset.interface';
 
 @Component({
@@ -67,16 +67,30 @@ export class HomeComponent {
     {
       label: 'Altersklassen',
       value: 'age-buckets',
-      data: (year: number) =>
-        this.populationService.getAgeGroupPerMunicipalityByYear(
+      data: (year: number) => {
+        const data = this.populationService.getAgeGroupPerMunicipalityByYear(
           year,
           this.minAge,
           this.maxAge,
           this.selectedSex
-        ),
+        );
+
+        // Get all percentageAgeGroup values from the data to calculate the min and max value.
+        // They are used to generate the color schema
+        const values: number[] = [];
+        data.forEach((d: any) => {
+          values.push(d.percentageAgeGroup);
+        });
+        this.selectedDataset.min = min(values);
+        this.selectedDataset.max = max(values);
+
+        return data;
+      },
       color: (data: any) => {
         return this.selectedDataset.colorScheme(
-          this.getDataByShape(data)?.percentageAgeGroup
+          (this.getDataByShape(data)?.percentageAgeGroup -
+            this.selectedDataset.min * 0.95) /
+            ((this.selectedDataset.max - this.selectedDataset.min) * 1.05)
         );
       },
       colorScheme: interpolateBlues,

@@ -143,15 +143,15 @@ export class HeatmapComponent implements AfterViewInit {
       .style('stroke-width', 4)
       .style('stroke', 'none')
       .style('opacity', 0.8)
-      .on('mouseover', (event: MouseEvent) => {
-        this.mouseover(event);
+      .on('mouseover', (event: MouseEvent, data: any) => {
+        this.hover(event, data);
+      })
+      .on('mousemove', (event: MouseEvent, data: any) => {
+        this.hover(event, data);
       })
       .on('mouseout', (event: MouseEvent) => {
         this.mouseleave(event);
-      })
-      .on('mousemove', (event: MouseEvent, data: any) =>
-        this.mousemove(event, data)
-      );
+      });
   }
 
   /**
@@ -162,7 +162,8 @@ export class HeatmapComponent implements AfterViewInit {
    */
   private constructTooltip() {
     this.tooltip = select('#' + this.svgId + '-tooltip')
-      .style('opacity', 0)
+      .style('opacity', 1)
+      .style('display', 'none')
       .style('background-color', 'white')
       .style('border', 'solid')
       .style('border-width', '2px')
@@ -171,32 +172,23 @@ export class HeatmapComponent implements AfterViewInit {
   }
 
   /**
-   * Show the tooltip when the mouse is over a shape and restyle the border (stroke) of the current shape.
+   * When the mouse over, update the tooltip text with the correct data and set the new position of the tooltip.
+   * Show the tooltip and restyle the border (stroke) of the current shape.
    *
    * @param event The mouse event to get the current target and therefore the correct shape.
    * @private
    */
-  private mouseover(event: MouseEvent) {
-    this.tooltip?.style('opacity', 1);
+  private hover(event: MouseEvent, data: any) {
+    this.tooltipData = data;
+    this.tooltip
+      ?.style('left', event.pageX + 20 + 'px')
+      .style('top', event.pageY + 20 + 'px');
 
+    this.tooltip?.style('display', 'block');
     // @ts-ignore
     select(event.currentTarget)
       .style('stroke', 'black')
       .style('stroke-width', 3);
-  }
-
-  /**
-   * When the mouse move, update the tooltip text with the correct data and set the new position of the tooltip.
-   *
-   * @param event The mouse event to get the current position of the mouse
-   * @param data The feature of the hovered shape from the geojson file
-   * @private
-   */
-  private mousemove(event: MouseEvent, data: any) {
-    this.tooltipData = data;
-    this.tooltip
-      ?.style('left', event.pageX + 15 + 'px')
-      .style('top', event.pageY + 'px');
   }
 
   /**
@@ -206,7 +198,7 @@ export class HeatmapComponent implements AfterViewInit {
    * @private
    */
   private mouseleave(event: MouseEvent) {
-    this.tooltip?.style('opacity', 0);
+    this.tooltip?.style('display', 'none');
 
     // @ts-ignore
     select(event.currentTarget).style('stroke-width', 0);

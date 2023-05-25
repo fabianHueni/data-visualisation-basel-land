@@ -88,7 +88,7 @@ export class LegendComponent implements AfterViewInit, OnChanges {
       .append('text')
       .attr('x', 0)
       .attr('y', 60)
-      .text(this.min)
+      .text(Math.round(this.min * 100) / 100)
       .style('font-family', 'roboto')
       .style('font-size', ' 14px')
       .attr('text-anchor', 'left');
@@ -98,7 +98,7 @@ export class LegendComponent implements AfterViewInit, OnChanges {
       .append('text')
       .attr('x', 10 * (size + 2))
       .attr('y', 60)
-      .text(this.max)
+      .text(Math.round(this.max * 100) / 100)
       .style('font-size', ' 14px')
       .style('font-family', 'roboto')
       .attr('text-anchor', 'left');
