@@ -244,9 +244,23 @@ export class LineChartComponent implements AfterViewInit {
 
       this.tooltip?.style('display', 'block');
 
-      this.tooltip
-        ?.style('left', event.pageX + 12 + 'px')
-        .style('top', event.pageY + 'px');
+      const tooltipWidth = this.tooltip?.node().getBoundingClientRect().width;
+      const tooltipOffset = 12;
+
+      console.log(
+        window.innerWidth - event.pageX - tooltipWidth - tooltipOffset
+      );
+      console.log(this.tooltip?.node().getBoundingClientRect());
+
+      if (window.innerWidth - event.pageX <= tooltipWidth + 3 * tooltipOffset) {
+        this.tooltip
+          ?.style('left', event.pageX - tooltipWidth - tooltipOffset + 'px')
+          .style('top', event.pageY + 'px');
+      } else {
+        this.tooltip
+          ?.style('left', event.pageX + 12 + 'px')
+          .style('top', event.pageY + 'px');
+      }
     };
 
     // hover event emitter function is applied here

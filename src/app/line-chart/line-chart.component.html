@@ -13,12 +13,5 @@
         <b>{{ entry.value | number : "1.0-2" }}</b>
       </ng-container>
     </div>
-
-    <ng-container
-      *ngTemplateOutlet="
-        tooltipTemplate ?? null;
-        context: { data: tooltipData }
-      "
-    ></ng-container>
   </div>
 </div>

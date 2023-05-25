@@ -119,7 +119,7 @@ export class LegendComponent implements AfterViewInit, OnChanges {
     const lineHeight = 4;
     const lineWidth = 25;
     select('#' + this.svgId)
-      .attr('width', 500)
+      .attr('width', '100%')
       .attr('height', 30)
       .selectAll('legendLine')
       .data(this.lineData.keys())
