@@ -1,9 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { PopulationService } from '../../common/service/population.service';
-import {
-  LineChartData,
-  LineChartKey,
-} from '../../line-chart/line-chart-data-interface';
+import { LineChartData, LineChartKey } from '../line-chart-data-interface';
 
 @Component({
   selector: 'app-development-median',

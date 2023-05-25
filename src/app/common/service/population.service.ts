@@ -98,9 +98,7 @@ export class PopulationService {
    */
   public getMedianAgePerYearByMunicipality(municipalityId: number): InternMap {
     return rollup(
-      this.populationData.filter((entry: Population) => {
-        return entry.municipality_number === municipalityId;
-      }),
+      this.getPopulationDataPerMunicipality(municipalityId),
       (v) => this.calcMedian(v),
       (d) => d.year
     );

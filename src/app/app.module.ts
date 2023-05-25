@@ -29,8 +29,8 @@ import localeCH from '@angular/common/locales/de-CH';
 import { KeyNumbersComponent } from './key-numbers/key-numbers.component';
 import { ButtonModule } from 'primeng/button';
 import { LineChartComponent } from './line-chart/line-chart.component';
-import { DevelopmentQuotientsComponent } from './municipality/development-quotients/development-quotients.component';
-import { DevelopmentMedianComponent } from './municipality/development-median/development-median.component';
+import { DevelopmentQuotientsComponent } from './line-chart/development-quotients/development-quotients.component';
+import { DevelopmentMedianComponent } from './line-chart/development-median/development-median.component';
 
 /**
  * Load the data for the visualizations bevor startup the app

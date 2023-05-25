@@ -1,9 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { PopulationService } from '../../common/service/population.service';
-import {
-  LineChartData,
-  LineChartKey,
-} from '../../line-chart/line-chart-data-interface';
+import { LineChartData, LineChartKey } from '../line-chart-data-interface';
 
 @Component({
   selector: 'app-development-quotients',
@@ -14,18 +11,6 @@ export class DevelopmentQuotientsComponent {
   @Input()
   set selectedMunicipalityId(municipalityId: number) {
     this.data = new Map<LineChartKey, LineChartData[]>();
-
-    const medianMap =
-      this.populationService.getMedianAgePerYearByMunicipality(municipalityId);
-
-    this.medians = Array.from(
-      medianMap as unknown as Map<number, number>,
-      (d) => {
-        return { year: d[0], value: d[1] };
-      }
-    );
-    this.medians.sort((a: any, b: any) => a.year - b.year);
-
     this.data.set(
       {
         key: 'youth',
@@ -60,8 +45,6 @@ export class DevelopmentQuotientsComponent {
   }
 
   public data: Map<LineChartKey, LineChartData[]> = new Map();
-
-  public medians: any;
 
   constructor(private populationService: PopulationService) {}
 }

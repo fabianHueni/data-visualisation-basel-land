@@ -108,6 +108,20 @@
   <app-heatmap [id]="0"></app-heatmap>
 </p-card>
 
+<div class="chart-grid" [style]="'height: 100%'">
+  <p-card>
+    <app-development-quotients
+      [selectedMunicipalityId]="0"
+    ></app-development-quotients>
+  </p-card>
+
+  <p-card>
+    <app-development-median
+      [selectedMunicipalityId]="0"
+    ></app-development-median>
+  </p-card>
+</div>
+
 <!-- Templates of tooltips for different data sets-->
 <ng-template #tooltipTemplate let-tooltipData="data">
   <ng-container *ngIf="selectedDataset.value === 'median'">
