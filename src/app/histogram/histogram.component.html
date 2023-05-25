@@ -1,2 +1,8 @@
-<svg id="histogram_canvas"></svg>
-<div>Historgam</div>
+<p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+<div #heatmapWrapper>
+  <svg id="histogram_canvas"></svg>
+  <div id="'tooltip'" class="tooltip">
+    Alter: {{ tooltipData?.age }} <br />
+    Einwohneranzahl: {{ tooltipData?.population }} <br />
+  </div>
+</div>

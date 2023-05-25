@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
-import { axisBottom, axisLeft, max, scaleBand, scaleLinear, select } from 'd3';
-import { PopulationBySex } from '../common/model/population.interface';
+import { Component, Input } from '@angular/core';
+import { axisBottom, axisLeft, max, scaleLinear, select } from 'd3';
+import { Population } from '../common/model/population.interface';
+import { PopulationService } from '../common/service/population.service';
+import { Selection } from 'd3-selection';
 
 @Component({
   selector: 'app-histogram',
@@ -8,37 +10,60 @@ import { PopulationBySex } from '../common/model/population.interface';
   styleUrls: ['./histogram.component.scss'],
 })
 export class HistogramComponent {
-  private population: PopulationBySex[] = [
-    { sex: 0, age: 1, year: 2003, population: 10 },
-    { sex: 0, age: 2, year: 2003, population: 20 },
-    { sex: 0, age: 3, year: 2003, population: 30 },
-    { sex: 0, age: 4, year: 2003, population: 40 },
-    { sex: 1, age: 1, year: 2003, population: 15 },
-    { sex: 1, age: 2, year: 2003, population: 25 },
-    { sex: 1, age: 3, year: 2003, population: 35 },
-    { sex: 1, age: 4, year: 2003, population: 45 },
-  ];
+  public years: number[] = [];
+  private max = 0;
+
+  private population: Population[] = [];
   private svg: any;
   private margin = 50;
-  private width = 750 - this.margin * 2;
-  private height = 400 - this.margin * 2;
+  private width = 1000 - this.margin * 2;
+  private height = 750 - this.margin * 2;
 
   // Create the X-axis band scale
-  private x = scaleLinear().domain([-50, 50]).range([0, this.width]);
-  //.tickFormat((d: number) =>{return `${Math.abs(d)}`});
+  private x = scaleLinear().domain([-1000, 1000]).range([0, this.width]);
 
   // Create the Y-axis band scale
-  private y = scaleBand()
-    .range([0, this.height])
-    .domain(
-      this.population.map(function (p) {
-        return `${p.age}`;
-      })
-    )
-    .padding(0.1);
+  private y = scaleLinear().range([this.height, 0]).domain([0, 100]);
+
+  @Input()
+  public set id(id: number) {
+    this._id = id;
+    this.readData();
+  }
+  private _id = 0;
+
+  public set selectedYear(year: number) {
+    this._selectedYear = year;
+    this.readData();
+  }
+  public _selectedYear = 2022;
+
+  private tooltip: Selection<any, any, any, any> | undefined;
+  public tooltipData: any = null;
+
+  constructor(private populationService: PopulationService) {}
 
   ngOnInit(): void {
+    for (let year = 2022; year > 2002; year--) {
+      this.years.push(year);
+    }
     this.createSvg();
+    this.constructTooltip();
+    this.readData();
+  }
+
+  private readData() {
+    console.log(this._id, this._selectedYear);
+    if (!this.svg) return;
+    this.svg.selectAll('*').remove();
+    this.population = this.populationService.getPopulationByYearAndMunicipality(
+      this._selectedYear,
+      this._id
+    );
+    console.log(this.population);
+    const maxPopulation = max(this.population.map((entry) => entry.population));
+    this.max = maxPopulation ? maxPopulation : 0;
+    this.x = scaleLinear().domain([-this.max, this.max]).range([0, this.width]);
     this.drawBars(this.population);
   }
 
@@ -47,10 +72,11 @@ export class HistogramComponent {
       .attr('width', this.width + this.margin * 2)
       .attr('height', this.height + this.margin * 2)
       .append('g')
+      .attr('id', 'histogram')
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')');
   }
 
-  private drawBars(data: PopulationBySex[]): void {
+  private drawBars(data: Population[]): void {
     // Draw the X-axis on the DOM
     this.svg
       .append('g')
@@ -69,16 +95,15 @@ export class HistogramComponent {
     // Draw the Y-axis on the DOM
     this.svg
       .append('g')
-      .attr('transform', 'translate(' + this.x(1) + ',0)')
-      .call(axisLeft(this.y).tickSize(0))
+      .call(axisLeft(this.y).tickSize(0).ticks(20))
       .select('.domain')
       .remove();
 
     this.drawBarsM(data);
     this.drawBarsF(data);
   }
-  private drawBarsM(data: PopulationBySex[]): void {
-    data = data.filter((d) => d.sex == 0);
+  private drawBarsM(data: Population[]): void {
+    data = data.filter((d) => d.sex === 1);
 
     // Create and fill the bars
     this.svg
@@ -86,18 +111,24 @@ export class HistogramComponent {
       .data(data)
       .enter()
       .append('rect')
-      .attr('x', this.x(5))
-      .attr('y', (d: PopulationBySex) => this.y(`${d.age}`))
-      .attr(
-        'width',
-        (d: PopulationBySex) => this.x(d.population - 5) - this.x(0)
-      )
-      .attr('height', (d: PopulationBySex) => this.y.bandwidth())
-      .attr('fill', 'blue');
+      .attr('x', this.x(0))
+      .attr('y', (d: Population) => this.y(d.age))
+      .attr('width', (d: Population) => this.x(d.population) - this.x(0))
+      .attr('height', (d: Population) => this.height / 100)
+      .attr('fill', '#6A82DF')
+      .on('mouseover', (event: MouseEvent) => {
+        this.mouseover(event);
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        this.mouseleave(event);
+      })
+      .on('mousemove', (event: MouseEvent, data: any) =>
+        this.mousemove(event, data)
+      );
   }
 
-  private drawBarsF(data: PopulationBySex[]): void {
-    data = data.filter((d) => d.sex == 1);
+  private drawBarsF(data: Population[]): void {
+    data = data.filter((d) => d.sex === 2);
 
     // Create and fill the bars
     this.svg
@@ -106,10 +137,78 @@ export class HistogramComponent {
       .enter()
       .append('rect')
       .attr('class', 'bar negative')
-      .attr('x', (d: PopulationBySex) => this.x(-d.population))
-      .attr('y', (d: PopulationBySex) => this.y(`${d.age}`))
-      .attr('width', (d: PopulationBySex) => this.x(-5) - this.x(-d.population))
-      .attr('height', (d: PopulationBySex) => this.y.bandwidth())
-      .attr('fill', 'pink');
+      .attr('x', (d: Population) => this.x(-d.population))
+      .attr('y', (d: Population) => this.y(d.age))
+      .attr('width', (d: Population) => this.x(0) - this.x(-d.population))
+      .attr('height', this.height / 100)
+      .attr('fill', 'pink')
+      .on('mouseover', (event: MouseEvent) => {
+        this.mouseover(event);
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        this.mouseleave(event);
+      })
+      .on('mousemove', (event: MouseEvent, data: any) =>
+        this.mousemove(event, data)
+      );
+  }
+
+  /**
+   * Construct the initial tooltip with a new div appended to the DOM.
+   * Does have more styles from the css class.
+   *
+   * @private
+   */
+  private constructTooltip() {
+    this.tooltip = select('#histogram')
+      .style('opacity', 1)
+      .style('background-color', 'white')
+      .style('border', 'solid')
+      .style('border-width', '2px')
+      .style('border-radius', '5px')
+      .style('padding', '5px');
+  }
+
+  /**
+   * Show the tooltip when the mouse is over a shape and restyle the border (stroke) of the current shape.
+   *
+   * @param event The mouse event to get the current target and therefore the correct shape.
+   * @private
+   */
+  private mouseover(event: MouseEvent) {
+    this.tooltip?.style('opacity', 1);
+
+    // @ts-ignore
+    select(event.currentTarget)
+      .style('stroke', 'black')
+      .style('stroke-width', 1);
+  }
+
+  /**
+   * When the mouse move, update the tooltip text with the correct data and set the new position of the tooltip.
+   *
+   * @param event The mouse event to get the current position of the mouse
+   * @param data The feature of the hovered shape from the geojson file
+   * @private
+   */
+  private mousemove(event: MouseEvent, data: any) {
+    this.tooltipData = data;
+    console.log(this.tooltipData);
+    this.tooltip
+      ?.style('left', event.pageX + 15 + 'px')
+      .style('top', event.pageY + 'px');
+  }
+
+  /**
+   * Hide the tooltip and reset the border (stroke) of the shape when the mouse leaf a municipality.
+   *
+   * @param event Mouse Event to get the current target of the mouse
+   * @private
+   */
+  private mouseleave(event: MouseEvent) {
+    this.tooltip?.style('opacity', 1);
+
+    // @ts-ignore
+    select(event.currentTarget).style('stroke-width', 0);
   }
 }

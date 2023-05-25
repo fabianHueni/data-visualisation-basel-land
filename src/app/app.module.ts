@@ -21,7 +21,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { HeatmapComponent } from './heatmap/heatmap.component';
 import { FooterComponent } from './footer/footer.component';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { ViolinplotComponent } from './violinplot/violinplot.component';
 import { HistogramComponent } from './histogram/histogram.component';
 import { LegendComponent } from './legend/legend.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -50,7 +49,6 @@ function initializeApp(populationService: PopulationService) {
     HeatmapComponent,
     ChoroplethComponent,
     FooterComponent,
-    ViolinplotComponent,
     HistogramComponent,
     LegendComponent,
     KeyNumbersComponent,
