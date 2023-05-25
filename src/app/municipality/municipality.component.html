@@ -21,7 +21,7 @@
   <app-heatmap [id]="selectedMunicipality.id"></app-heatmap>
 </p-card>
 
-<div class="chart-grid">
+<div class="chart-grid" [style]="'height: 100%'">
   <p-card>
     <app-development-quotients
       [selectedMunicipalityId]="selectedMunicipality.id"

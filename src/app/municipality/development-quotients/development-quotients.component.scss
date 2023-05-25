@@ -3,11 +3,11 @@ app-legend {
   justify-content: flex-end;
 }
 
-.chart {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.text-underline {
+  text-decoration: underline;
+}
 
+.chart {
   .chart-info {
     margin-left: 24px;
   }

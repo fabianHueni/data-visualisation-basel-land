@@ -2,34 +2,31 @@
   <div class="chart-info">
     <h2>Zeitliche Entwicklung der erwerbstätigen Bevölkerung</h2>
     <p>
-      Diese Grafik zeigt die zeitliche Entwicklung des Jugend-, Alters- und
-      Gesamtquotient. Die drei Quotienten sind wie folgt definiert:
-    </p>
-    <ul>
-      <li>
-        Der Jugendquotient gibt das Verhältnis der unter 20-Jährigen zur
-        Bevölkerung im Alter von 20 bis 64 Jahren an.
-      </li>
-      <li>
-        Der Altersquotient gibt das Verhältnis der über 64-Jährigen zur
-        Bevölkerung im Alter von 20 bis 64 Jahren an.
-      </li>
-      <li>
-        Der Gesamtquotient gibt das Verhältnis der unter 20-Jährigen und der
-        über 64-Jährigen zur Bevölkerung im Alter von 20 bis 64 Jahren an.
-      </li>
-    </ul>
-
-    <p>
-      Mehr Informationen können auf der
-      <a
-        href="https://www.bfs.admin.ch/bfs/de/home/statistiken/querschnittsthemen/wohlfahrtsmessung/alle-indikatoren/gesellschaft/altersquotient.html"
-        target="_blank"
-        >Webseite</a
+      Diese Grafik zeigt die zeitliche Entwicklung des
+      <span
+        class="text-underline"
+        pTooltip="Das Verhältnis der unter 20-Jährigen zur
+        Bevölkerung im Alter von 20 bis 64 Jahren."
+        tooltipPosition="bottom"
+        >Jugend-</span
+      >,
+      <span
+        class="text-underline"
+        pTooltip="Das Verhältnis der über 64-Jährigen zur
+        Bevölkerung im Alter von 20 bis 64 Jahren"
+        tooltipPosition="bottom"
+        >Alters-</span
       >
-      des Bundesamtes für Statistik gefunden werden.
+      und
+      <span
+        class="text-underline"
+        pTooltip="Das Verhältnis der unter 20-Jährigen und
+        über 64-Jährigen zur Bevölkerung im Alter von 20 bis 64 Jahren."
+        tooltipPosition="bottom"
+        >Gesamtquotient</span
+      >. <br />
     </p>
   </div>
-  <app-legend [lineData]="data"></app-legend>
+  <app-legend class="chart-info" [lineData]="data"></app-legend>
   <app-line-chart [data]="data"></app-line-chart>
 </div>

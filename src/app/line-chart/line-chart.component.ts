@@ -215,13 +215,21 @@ export class LineChartComponent implements AfterViewInit {
     // information about the x-coordinate and the hover-indicator
     const pointerMoved = (event: any): void => {
       const [xm, ym] = pointer(event);
-      console.log(event);
-      console.log(pointer(event));
+
       // the x value which lies within the dimension
       const year = Math.round(this.xScale.invert(xm));
 
       // the y value which lies within the dimension
       const yValue = this.yScale.invert(ym);
+
+      const yValues: { label: string; value: number; color: string }[] = [];
+      this._data.forEach((value, key) => {
+        value
+          .filter((d) => d.year === year)
+          .map((d) =>
+            yValues.push({ label: key.label, value: d.value, color: key.color })
+          );
+      });
 
       // if the x-values are given, the closest x-value is given as position
       // this makes the application of a tooltip easier
@@ -246,11 +254,11 @@ export class LineChartComponent implements AfterViewInit {
         .getElementById('hover-indicator')
         ?.getBoundingClientRect();
 
-      this.tooltipData = { year: year, value: yValue };
+      this.tooltipData = { year: year, value: yValues };
 
       this.tooltip?.style('display', 'block');
       this.tooltip
-        ?.style('left', event.pageX + 'px')
+        ?.style('left', event.pageX + 12 + 'px')
         .style('top', event.pageY + 'px');
     };
 
@@ -290,7 +298,6 @@ export class LineChartComponent implements AfterViewInit {
     const i = 1; // bisect(this._data.get('median'), x0, 1);
     const selectedData = { year: 2000, value: 2 }; // this._data[i];
 
-    console.log(this.yScale(selectedData?.value));
     this.tooltipData = selectedData;
     this.tooltip
       ?.style('left', this.xScale(selectedData?.year) + 'px')
