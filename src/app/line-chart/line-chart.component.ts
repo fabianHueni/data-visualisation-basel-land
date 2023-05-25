@@ -192,7 +192,7 @@ export class LineChartComponent implements AfterViewInit {
 
     this.addMouseEvents(svgInner);
 
-    // catch mouse events
+    // is needed to handle the tooltip and hover indicator properly
     svgInner
       .append('rect')
       .style('fill', 'none')
@@ -200,27 +200,20 @@ export class LineChartComponent implements AfterViewInit {
       .attr('x', this.margin)
       .attr('width', this.width - 2 * this.margin)
       .attr('height', this.height - 2 * this.margin);
-
-    /*
-      .on('mouseover', this.mouseover.bind(this))
-      .on('mousemove', this.mousemove.bind(this))
-      .on('mouseout', this.mouseout.bind(this));
-     */
   }
 
+  /**
+   * Adds the mouse events, add a hover indicator and handle the the visability and position of the tooltip.
+   *
+   * @param svg - the svg to add the mouse events to
+   * @private
+   */
   private addMouseEvents(svg: any) {
-    // hover event emitter function which generates a hover indicator at the
-    // x-coordinate or when the xValues are given at the nearest xValue
-    // the user is currently hovering and emits an event with
-    // information about the x-coordinate and the hover-indicator
     const pointerMoved = (event: any): void => {
       const [xm, ym] = pointer(event);
 
       // the x value which lies within the dimension
       const year = Math.round(this.xScale.invert(xm));
-
-      // the y value which lies within the dimension
-      const yValue = this.yScale.invert(ym);
 
       const yValues: { label: string; value: number; color: string }[] = [];
       this._data.forEach((value, key) => {
@@ -231,13 +224,10 @@ export class LineChartComponent implements AfterViewInit {
           );
       });
 
-      // if the x-values are given, the closest x-value is given as position
-      // this makes the application of a tooltip easier
-      // xValue = this.findClosestValue(this.xScale.invert(xm));
-
       // remove old hover indicator
       svg.select('#' + 'hover-indicator').remove();
 
+      // append new hover indicator
       svg
         .append('rect')
         .attr('id', 'hover-indicator')
@@ -250,13 +240,10 @@ export class LineChartComponent implements AfterViewInit {
         // move the rect to the center of the ticks
         .attr('transform', `translate(-1,0)`);
 
-      const indicatorRect = document
-        .getElementById('hover-indicator')
-        ?.getBoundingClientRect();
-
       this.tooltipData = { year: year, value: yValues };
 
       this.tooltip?.style('display', 'block');
+
       this.tooltip
         ?.style('left', event.pageX + 12 + 'px')
         .style('top', event.pageY + 'px');
@@ -270,48 +257,6 @@ export class LineChartComponent implements AfterViewInit {
       svg.select('#' + 'hover-indicator').remove();
       this.tooltip?.style('display', 'none');
     });
-  }
-
-  /**
-   * Show the tooltip when the mouse is over a shape and restyle the border (stroke) of the current shape.
-   *
-   * @param event The mouse event to get the current target and therefore the correct shape.
-   * @private
-   */
-  private mouseover(event: MouseEvent) {
-    this.tooltip?.style('opacity', 1);
-  }
-
-  /**
-   * When the mouse move, update the tooltip text with the correct data and set the new position of the tooltip.
-   *
-   * @param event The mouse event to get the current position of the mouse
-   * @param data The feature of the hovered shape from the geojson file
-   * @private
-   */
-  private mousemove(event: MouseEvent) {
-    const bisect = bisector(function (d: any) {
-      return d.year;
-    }).left;
-
-    const x0 = this.xScale.invert(event.x);
-    const i = 1; // bisect(this._data.get('median'), x0, 1);
-    const selectedData = { year: 2000, value: 2 }; // this._data[i];
-
-    this.tooltipData = selectedData;
-    this.tooltip
-      ?.style('left', this.xScale(selectedData?.year) + 'px')
-      .style('top', this.yScale(selectedData?.value) + 225 + 'px');
-  }
-
-  /**
-   * Hide the tooltip and reset the border (stroke) of the shape when the mouse leaf a municipality.
-   *
-   * @param event Mouse Event to get the current target of the mouse
-   * @private
-   */
-  private mouseout(event: MouseEvent) {
-    // this.tooltip?.style('opacity', 0);
   }
 
   /**
@@ -344,9 +289,5 @@ export class LineChartComponent implements AfterViewInit {
     }
 
     return [(min(allValues) ?? 0) * 0.95, (max(allValues) ?? 1) * 1.05];
-  }
-
-  private findClosestValue(x: number) {
-    this._data;
   }
 }
