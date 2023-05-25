@@ -435,9 +435,47 @@ export class PopulationService {
     year: number,
     municipality_number: number
   ): Population[] {
-    return this.getPopulationDataPerMunicipality(municipality_number).filter(
-      (p: Population) => p.year === year
-    );
+    let population = this.getPopulationDataPerMunicipality(
+      municipality_number
+    ).filter((p: Population) => p.year === year);
+    if (municipality_number === 0)
+      population = this.concatPopulationOfMunicipality(population, year);
+    return population;
+  }
+
+  private concatPopulationOfMunicipality(
+    population: Population[],
+    year: number
+  ): Population[] {
+    let concatedData: Population[] = [];
+    for (let age = 0; age <= 100; age++) {
+      let popDataByAge = population.filter((entry) => entry.age === age);
+      let malePopulation: Population = {
+        age: age,
+        municipality: 'Kanton',
+        municipality_number: 0,
+        year: year,
+        sex: 1,
+        population: 0,
+      };
+      let femalePopulation: Population = {
+        age: age,
+        municipality: 'Kanton',
+        municipality_number: 0,
+        year: year,
+        sex: 2,
+        population: 0,
+      };
+      for (const p of popDataByAge) {
+        if (p.sex === 1) {
+          malePopulation.population += p.population;
+        } else {
+          femalePopulation.population += p.population;
+        }
+      }
+      concatedData.push(malePopulation, femalePopulation);
+    }
+    return concatedData;
   }
 
   public getPopulationByYearAndMunicipality5YearAgeGroup(
