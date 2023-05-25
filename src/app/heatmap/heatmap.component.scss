@@ -1,14 +1,14 @@
 .heatmap-info {
-  display: flex;
-  justify-content: space-between;
+  margin-left: 24px;
 
-  h2 {
-    margin-left: 24px;
+  app-legend {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
   }
+
   @media screen and (max-width: 800px) {
     flex-direction: column;
-    h2 {
-      margin-left: 0;
-    }
+    margin-left: 0;
   }
 }

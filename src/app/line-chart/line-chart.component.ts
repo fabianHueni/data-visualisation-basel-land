@@ -247,11 +247,6 @@ export class LineChartComponent implements AfterViewInit {
       const tooltipWidth = this.tooltip?.node().getBoundingClientRect().width;
       const tooltipOffset = 12;
 
-      console.log(
-        window.innerWidth - event.pageX - tooltipWidth - tooltipOffset
-      );
-      console.log(this.tooltip?.node().getBoundingClientRect());
-
       if (window.innerWidth - event.pageX <= tooltipWidth + 3 * tooltipOffset) {
         this.tooltip
           ?.style('left', event.pageX - tooltipWidth - tooltipOffset + 'px')

@@ -12,25 +12,26 @@ export class DevelopmentMedianComponent {
   set selectedMunicipalityId(municipalityId: number) {
     this.data = new Map<LineChartKey, LineChartData[]>();
 
-    const medianMap =
-      this.populationService.getMedianAgePerYearByMunicipality(municipalityId);
+    this.populationService
+      .getMedianAgePerYearByMunicipality(municipalityId)
+      .then((medianMap) => {
+        const medians = Array.from(
+          medianMap as unknown as Map<number, number>,
+          (d) => {
+            return { year: d[0], value: d[1] };
+          }
+        );
+        medians.sort((a: any, b: any) => a.year - b.year);
 
-    const medians = Array.from(
-      medianMap as unknown as Map<number, number>,
-      (d) => {
-        return { year: d[0], value: d[1] };
-      }
-    );
-    medians.sort((a: any, b: any) => a.year - b.year);
-
-    this.data.set(
-      {
-        key: 'median',
-        label: 'Medianalter',
-        color: '#496f9e',
-      },
-      medians
-    );
+        this.data.set(
+          {
+            key: 'median',
+            label: 'Medianalter',
+            color: '#496f9e',
+          },
+          medians
+        );
+      });
   }
 
   public data: Map<LineChartKey, LineChartData[]> = new Map();

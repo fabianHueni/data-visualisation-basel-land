@@ -65,7 +65,7 @@ export class HomeComponent {
       max: 55,
     },
     {
-      label: 'Altersklassen pro Einwohner',
+      label: 'Altersklassen',
       value: 'age-buckets',
       data: (year: number) =>
         this.populationService.getAgeGroupPerMunicipalityByYear(
@@ -87,7 +87,7 @@ export class HomeComponent {
     },
     {
       label: 'Betagte',
-      value: 'seniors',
+      value: 'elderly',
       data: (year: number) =>
         this.populationService.getAgeGroupPerMunicipalityByYear(
           year,

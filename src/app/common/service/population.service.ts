@@ -5,6 +5,7 @@ import {
   Population,
   PopulationByGroups,
 } from '../model/population.interface';
+import { Observable } from 'rxjs';
 
 export const AGE_GROUPS: string[] = [
   '0-4',
@@ -96,12 +97,17 @@ export class PopulationService {
    *
    * @param municipalityId The municipality id to calculate the medians for
    */
-  public getMedianAgePerYearByMunicipality(municipalityId: number): InternMap {
-    return rollup(
-      this.getPopulationDataPerMunicipality(municipalityId),
-      (v) => this.calcMedian(v),
-      (d) => d.year
-    );
+  public getMedianAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<InternMap> {
+    return new Promise((resolve, reject) => {
+      const result = rollup(
+        this.getPopulationDataPerMunicipality(municipalityId),
+        (v) => this.calcMedian(v),
+        (d) => d.year
+      );
+      resolve(result);
+    });
   }
 
   /**
@@ -109,12 +115,19 @@ export class PopulationService {
    *
    * @param municipalityId The municipality id to calculate the medians for
    */
-  public getYouthQuotientAgePerYearByMunicipality(municipalityId: number): any {
-    const result = [];
-    for (let year = 2003; year <= 2022; year++) {
-      result.push({ year, value: this.getYouthQuotient(municipalityId, year) });
-    }
-    return result;
+  public getYouthQuotientAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const result = [];
+      for (let year = 2003; year <= 2022; year++) {
+        result.push({
+          year,
+          value: this.getYouthQuotient(municipalityId, year),
+        });
+      }
+      resolve(result);
+    });
   }
 
   /**
@@ -124,15 +137,17 @@ export class PopulationService {
    */
   public getSeniorQuotientAgePerYearByMunicipality(
     municipalityId: number
-  ): any {
-    const result = [];
-    for (let year = 2003; year <= 2022; year++) {
-      result.push({
-        year,
-        value: this.getSeniorQuotient(municipalityId, year),
-      });
-    }
-    return result;
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const result = [];
+      for (let year = 2003; year <= 2022; year++) {
+        result.push({
+          year,
+          value: this.getSeniorQuotient(municipalityId, year),
+        });
+      }
+      resolve(result);
+    });
   }
 
   /**
@@ -140,12 +155,19 @@ export class PopulationService {
    *
    * @param municipalityId The municipality id to calculate the medians for
    */
-  public getFullQuotientAgePerYearByMunicipality(municipalityId: number): any {
-    const result = [];
-    for (let year = 2003; year <= 2022; year++) {
-      result.push({ year, value: this.getFullQuotient(municipalityId, year) });
-    }
-    return result;
+  public getFullQuotientAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const result = [];
+      for (let year = 2003; year <= 2022; year++) {
+        result.push({
+          year,
+          value: this.getFullQuotient(municipalityId, year),
+        });
+      }
+      resolve(result);
+    });
   }
 
   /**

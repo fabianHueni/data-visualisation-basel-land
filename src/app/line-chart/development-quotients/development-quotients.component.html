@@ -27,6 +27,10 @@
       >. <br />
     </p>
   </div>
-  <app-legend class="chart-info" [lineData]="data"></app-legend>
-  <app-line-chart [data]="data"></app-line-chart>
+  <app-legend
+    *ngIf="this.data.size > 0"
+    class="chart-info"
+    [lineData]="data"
+  ></app-legend>
+  <app-line-chart *ngIf="this.data.size > 0" [data]="data"></app-line-chart>
 </div>

@@ -11,37 +11,44 @@ export class DevelopmentQuotientsComponent {
   @Input()
   set selectedMunicipalityId(municipalityId: number) {
     this.data = new Map<LineChartKey, LineChartData[]>();
-    this.data.set(
-      {
-        key: 'youth',
-        label: 'Jugendquotient',
-        color: '#006600',
-      },
-      this.populationService.getYouthQuotientAgePerYearByMunicipality(
-        municipalityId
-      )
-    );
+    this.populationService
+      .getYouthQuotientAgePerYearByMunicipality(municipalityId)
+      .then((youthMap) => {
+        this.data.set(
+          {
+            key: 'youth',
+            label: 'Jugendquotient',
+            color: '#006600',
+          },
+          youthMap
+        );
+      });
 
-    this.data.set(
-      {
-        key: 'senior',
-        label: 'Altersquotient',
-        color: '#000000',
-      },
-      this.populationService.getSeniorQuotientAgePerYearByMunicipality(
-        municipalityId
-      )
-    );
-    this.data.set(
-      {
-        key: 'full',
-        label: 'Gesamtquotient',
-        color: '#496f9e',
-      },
-      this.populationService.getFullQuotientAgePerYearByMunicipality(
-        municipalityId
-      )
-    );
+    this.populationService
+      .getSeniorQuotientAgePerYearByMunicipality(municipalityId)
+      .then((seniorMap) => {
+        this.data.set(
+          {
+            key: 'senior',
+            label: 'Altersquotient',
+            color: '#000000',
+          },
+          seniorMap
+        );
+      });
+
+    this.populationService
+      .getFullQuotientAgePerYearByMunicipality(municipalityId)
+      .then((fullMap) => {
+        this.data.set(
+          {
+            key: 'full',
+            label: 'Gesamtquotient',
+            color: '#496f9e',
+          },
+          fullMap
+        );
+      });
   }
 
   public data: Map<LineChartKey, LineChartData[]> = new Map();
