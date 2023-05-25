@@ -14,36 +14,72 @@
 </p>
 
 <p-card>
-  <div class="flex justify-content-between mb-6">
-    <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
-    <p-selectButton
+  <div class="flex justify-content-between mb-6 gap-4 flex-column lg:flex-row">
+    <div class="flex gap-4 lg:gap-6 sm:flex-column flex-column lg:flex-row">
+      <!-- Year selection-->
+      <div class="flex flex-wrap gap-3">
+        <p-dropdown [options]="years" [(ngModel)]="selectedYear"></p-dropdown>
+        <p-button
+          [icon]="yearInterval === 0 ? 'pi pi-play' : 'pi pi-pause'"
+          (onClick)="toggleYearInterval()"
+          pTooltip="Jahre automatisch hochzählen"
+          tooltipPosition="bottom"
+        ></p-button>
+      </div>
+
+      <!-- Sex selection -->
+      <div class="flex flex-wrap gap-3">
+        <div class="flex align-items-center" *ngFor="let item of sex">
+          <p-radioButton
+            [name]="item.label"
+            [value]="item.value"
+            [(ngModel)]="selectedSex"
+            [inputId]="'sex-' + item.value"
+          ></p-radioButton>
+          <label [for]="'sex-' + item.value" class="ml-2">{{
+            item.label
+          }}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Age bucket selection -->
+    <div class="filters flex" *ngIf="selectedDataset.value === 'age-buckets'">
+      <span class="p-float-label">
+        <p-inputNumber
+          inputStyleClass="number-input-width"
+          inputStyle="width: 100px !important;"
+          inputId="min-age"
+          [(ngModel)]="minAge"
+          [min]="0"
+          [max]="200"
+        >
+        </p-inputNumber>
+        <label htmlFor="min-age">Minimales Alter</label>
+      </span>
+      <span class="p-float-label">
+        <p-inputNumber
+          inputId="max-age"
+          [(ngModel)]="maxAge"
+          [min]="0"
+          [max]="200"
+        >
+        </p-inputNumber>
+        <label htmlFor="max-age">Maximales Alter</label>
+      </span>
+    </div>
+
+    <!-- Dataset selection-->
+    <!--    <p-selectButton
       [options]="datasets"
       [(ngModel)]="selectedDataset"
       optionLabel="label"
-    ></p-selectButton>
-  </div>
-
-  <div class="filters flex" *ngIf="selectedDataset.value == 'age-buckets'">
-    <span class="p-float-label">
-      <p-inputNumber
-        inputId="min-age"
-        [(ngModel)]="minAge"
-        [min]="0"
-        [max]="200"
-      >
-      </p-inputNumber>
-      <label htmlFor="min-age">Minimales Alter</label>
-    </span>
-    <span class="p-float-label">
-      <p-inputNumber
-        inputId="max-age"
-        [(ngModel)]="maxAge"
-        [min]="0"
-        [max]="200"
-      >
-      </p-inputNumber>
-      <label htmlFor="max-age">Maximales Alter</label>
-    </span>
+    ></p-selectButton>-->
+    <p-dropdown
+      [options]="datasets"
+      [(ngModel)]="selectedDataset"
+      optionLabel="label"
+    ></p-dropdown>
   </div>
 
   <!--  <p-slider
@@ -52,45 +88,59 @@
     [min]="2003"
     [max]="2022"
   ></p-slider>-->
+  <app-legend
+    [title]="selectedDataset.legendTitle"
+    [min]="selectedDataset.min"
+    [max]="selectedDataset.max"
+    [colorScheme]="selectedDataset.colorScheme"
+  ></app-legend>
   <app-choropleth
-    [tooltipRef]="selectedDataset.tooltipRef()"
-    [colorInterpolation]="getColorScheme"
+    [tooltipTemplate]="tooltipTemplate"
+    [colorCallback]="getColorScheme"
     [changSubject]="changingValue"
   ></app-choropleth>
 </p-card>
 
-<!-- Templates of tooltips for different data sets-->
-<ng-template #medianTooltip let-tooltipData="data">
-  <b>{{ tooltipData?.properties.name }} </b>
-  <br />
-  Medianalter:
-  {{ this.getDataByShape(tooltipData) }} Jahre
-</ng-template>
+<app-key-numbers [municipalityId]="0"></app-key-numbers>
 
-<ng-template #seniorsTooltip let-tooltipData="data">
-  <b>{{ tooltipData?.properties.name }} </b>
-  <br />
-  Seniorenanteil:
-  {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
-  Total Senioren:
-  {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
-  Total Einwohner:
-  {{ this.getDataByShape(tooltipData)?.total }}
-</ng-template>
-
-<ng-template #ageBucketTooltip let-tooltipData="data">
-  <b>{{ tooltipData?.properties.name }} </b>
-  <br />
-  Kinderanteil:
-  {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
-  Total Kinder:
-  {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
-  Total Einwohner:
-  {{ this.getDataByShape(tooltipData)?.total }}
-</ng-template>
-
-<p-card>
-  <h1>Altersverteilung auf dem ganzen Kanton</h1>
-  <p>Lirum larum Löffelstiel</p>
+<h1>Altersverteilung Basel-Land</h1>
+<p>
+  Diese Heatmap Grafik zeigt die Altersverteilung in 5-Jahresklassen pro
+  Kalenderjahr seit 2003 an. Je dunkler die Farbe, desto mehr Personen mit einem
+  Alter in dieser Altersklasse Alters leben in Basel-Land.
+</p>
+<p-card class="mb-4">
   <app-heatmap [id]="0"></app-heatmap>
 </p-card>
+
+<!-- Templates of tooltips for different data sets-->
+<ng-template #tooltipTemplate let-tooltipData="data">
+  <ng-container *ngIf="selectedDataset.value === 'median'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Medianalter:
+    {{ this.getDataByShape(tooltipData) }} Jahre
+  </ng-container>
+
+  <ng-container *ngIf="selectedDataset.value === 'seniors'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Seniorenanteil:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Senioren:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total }}
+  </ng-container>
+
+  <ng-container *ngIf="selectedDataset.value === 'age-buckets'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Kinderanteil:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Kinder:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total }}
+  </ng-container>
+</ng-template>

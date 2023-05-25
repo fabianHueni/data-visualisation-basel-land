@@ -3,9 +3,9 @@ import {
   Component,
   ElementRef,
   Input,
-  OnInit,
   ViewChild,
 } from '@angular/core';
+import { v4 as uuid } from 'uuid';
 import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
 import {
   AGE_GROUPS,
@@ -20,6 +20,8 @@ import { Selection } from 'd3-selection';
   styleUrls: ['./heatmap.component.scss'],
 })
 export class HeatmapComponent implements AfterViewInit {
+  readonly svgId = `plot-${uuid()}`;
+
   @Input()
   public set id(id: number) {
     this._id = id;
@@ -29,7 +31,6 @@ export class HeatmapComponent implements AfterViewInit {
     this.max = this.popService.getMax(this.data);
     this.readData(this.data);
   }
-
   public get id(): number {
     return this._id;
   }
@@ -43,12 +44,11 @@ export class HeatmapComponent implements AfterViewInit {
     this.popService.getPopulationNumbersAgeGroupsPerMunicipality(
       this._id ? this._id : 2829
     );
-  private max = 1;
+  public max = 1;
   private groups = AGE_GROUPS;
-  private margin = { top: 80, right: 25, bottom: 30, left: 60 };
+  private margin = { top: 20, right: 0, bottom: 30, left: 45 };
   private width = 1000 - this.margin.left - this.margin.right;
   private height = 700 - this.margin.top - this.margin.bottom;
-
   constructor(private popService: PopulationService) {}
 
   ngAfterViewInit(): void {
@@ -59,11 +59,16 @@ export class HeatmapComponent implements AfterViewInit {
 
     this.constructTooltip();
 
-    select('#heatmap_canvas')
+    this.x = scaleBand()
+      .range([0, this.width])
+      .domain(this.years)
+      .padding(0.05);
+
+    select('#' + this.svgId)
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
-      .attr('id', 'heatmap')
+      .attr('id', this.svgId + '-heatmap')
       .attr(
         'transform',
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
@@ -89,14 +94,14 @@ export class HeatmapComponent implements AfterViewInit {
     .domain(this.ageGroups)
     .padding(0.05); // Zwischenraum zwischen Boxen
 
-  private myColor = scaleLinear<string>()
+  public myColor = scaleLinear<string>()
     .range(['white', '#4a5d75'])
     .domain([0, 0.3 * this.max]);
 
   private tooltip: Selection<any, any, any, any> | undefined;
 
   private renderHeatmap() {
-    select('#heatmap')
+    select('#' + this.svgId + '-heatmap')
       .append('g')
       .call(axisBottom(this.x).tickSize(0))
       .style('font-size', 15)
@@ -104,7 +109,7 @@ export class HeatmapComponent implements AfterViewInit {
       .select('.domain')
       .remove();
 
-    select('#heatmap')
+    select('#' + this.svgId + '-heatmap')
       .append('g')
       .call(axisLeft(this.y).tickSize(0))
       .style('font-size', 15)
@@ -119,7 +124,7 @@ export class HeatmapComponent implements AfterViewInit {
       .range(['white', '#7491b5'])
       .domain([0, 0.35 * this.max]);
 
-    select('#heatmap')
+    select('#' + this.svgId + '-heatmap')
       .selectAll()
       .data(data.flat(2))
       .enter()
@@ -156,7 +161,7 @@ export class HeatmapComponent implements AfterViewInit {
    * @private
    */
   private constructTooltip() {
-    this.tooltip = select('#heatmap-tooltip')
+    this.tooltip = select('#' + this.svgId + '-tooltip')
       .style('opacity', 0)
       .style('background-color', 'white')
       .style('border', 'solid')

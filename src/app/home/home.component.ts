@@ -9,7 +9,14 @@ import {
 import { PopulationService } from '../common/service/population.service';
 import { interpolateOranges } from 'd3-scale-chromatic';
 import { Subject } from 'rxjs';
-import { interpolateBlues, interpolateCool, interpolateGreens } from 'd3';
+import {
+  interpolateBlues,
+  interpolateCool,
+  interpolateGreens,
+  scaleLinear,
+  select,
+} from 'd3';
+import { Dataset } from '../common/model/dataset.interface';
 
 @Component({
   selector: 'app-home',
@@ -37,18 +44,39 @@ export class HomeComponent {
   );
 
   /**
+   * An array with all years from 2003 to 2022.
+   * These are the years we have data to display.
+   */
+  public sex = [
+    { label: 'Alle', value: 0 },
+    { label: 'Männer', value: 1 },
+    { label: 'Frauen', value: 2 },
+  ];
+
+  public yearInterval = 0;
+
+  /**
    * An array with all datasets to show.
    */
-  public datasets = [
+  public datasets: Dataset[] = [
     {
       label: 'Medianalter',
       value: 'median',
       data: (year: number) =>
-        this.populationService.getAgeMedianPerMunicipalityByYear(year),
+        this.populationService.getAgeMedianPerMunicipalityByYear(
+          year,
+          this.selectedSex
+        ),
       color: (data: any) => {
-        return interpolateOranges((1 / 20) * (this.getDataByShape(data) - 35));
+        return this.selectedDataset.colorScheme(
+          (1 / 20) * (this.getDataByShape(data) - 35)
+        );
       },
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipMedian,
+      legendTitle: 'Medianalter in Jahren',
+      min: 35,
+      max: 55,
     },
     {
       label: 'Altersklassen pro Einwohner',
@@ -57,24 +85,40 @@ export class HomeComponent {
         this.populationService.getAgeGroupPerMunicipalityByYear(
           year,
           this.minAge,
-          this.maxAge
+          this.maxAge,
+          this.selectedSex
         ),
       color: (data: any) => {
-        return interpolateGreens(this.getDataByShape(data)?.percentageAgeGroup);
+        return this.selectedDataset.colorScheme(
+          this.getDataByShape(data)?.percentageAgeGroup
+        );
       },
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipAgeBucket,
+      legendTitle: 'Anteil der Altersklasse in Prozent',
+      min: 0,
+      max: 100,
     },
     {
       label: 'Betagte',
       value: 'seniors',
       data: (year: number) =>
-        this.populationService.getAgeGroupPerMunicipalityByYear(year, 65, 200),
+        this.populationService.getAgeGroupPerMunicipalityByYear(
+          year,
+          65,
+          200,
+          this.selectedSex
+        ),
       color: (data: any) => {
-        return interpolateBlues(
+        return this.selectedDataset.colorScheme(
           (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
         );
       },
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipSenior,
+      legendTitle: 'Anteil der Betagten in Prozent',
+      min: 0,
+      max: 30,
     },
     {
       label: 'Hochbetagte',
@@ -83,10 +127,14 @@ export class HomeComponent {
         this.populationService.getAgeGroupPerMunicipalityByYear(year, 80, 200),
       color: (data: any) => {
         return interpolateBlues(
-          this.getDataByShape(data)?.percentageAgeGroup * 8 // shift by 5% and stretch with 4
+          this.getDataByShape(data)?.percentageAgeGroup * 8
         );
       },
+      colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipSenior,
+      legendTitle: 'Anteil der Hochbetagten in Prozent',
+      min: 0,
+      max: 10,
     },
   ];
 
@@ -125,9 +173,26 @@ export class HomeComponent {
     return this._selectedYear;
   }
 
-  private _maxAge = 110;
+  public set selectedSex(sex: number) {
+    this._selectedSex = sex;
+    this.updateData();
+  }
+  public get selectedSex() {
+    return this._selectedSex;
+  }
+
+  private _maxAge = 100;
   private _minAge = 0;
   private _selectedYear = 2022;
+
+  /**
+   *  0 - All (Default)
+   *  1 - Male
+   *  2 - Female
+   *
+   * @private
+   */
+  private _selectedSex = 0;
   private _selectedDataSet = this.datasets[0];
 
   /**
@@ -144,6 +209,25 @@ export class HomeComponent {
   public getColorScheme = (data: any) => {
     return this._selectedDataSet.color(data);
   };
+
+  /**
+   * Toggle the year interval to automatically increase the year.
+   * If the interval is already set then pause and remove the intervall. Otherwise, set the interval with 1.0 seconds.
+   */
+  public toggleYearInterval() {
+    if (this.yearInterval > 0) {
+      clearInterval(this.yearInterval);
+      this.yearInterval = 0;
+    } else {
+      this.yearInterval = setInterval(() => {
+        this._selectedYear = this._selectedYear + 1;
+        if (this._selectedYear > 2022) {
+          this._selectedYear = 2003;
+        }
+        this.updateData();
+      }, 1000);
+    }
+  }
 
   private updateData() {
     this.populationData = this._selectedDataSet.data(this._selectedYear);

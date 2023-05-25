@@ -42,100 +42,54 @@ export class PopulationService {
   }
 
   /**
+   * Initialize the population data.
+   */
+  public initializeData(): Promise<Population[]> {
+    return this.loadPopulationData();
+  }
+
+  /**
    * Returns the age median for all municipalities by a given year.
    *
    * @param year The year to calculate the medians
    */
-  getAgeMedianPerMunicipalityByYear(year: number): InternMap {
-    return rollup(
-      this.populationData.filter((entry: Population) => entry.year == year),
+  public getAgeMedianPerMunicipalityByYear(year: number, sex = 0): InternMap {
+    const res = rollup(
+      this.populationData.filter((entry: Population) => {
+        // 0 is default for sex and means all. Therefore, only check sex if it is not 0.
+        // console.log(entry.sex + ' - ' + sex);
+        return entry.year === year && (sex === 0 || entry.sex === sex);
+      }),
       (v) => this.calcMedian(v),
       (d) => d.municipality_number
     );
-  }
-
-  /**
-   * Returns the percentage of seniors (>=65 years) for all municipalities by a given year.
-   *
-   * @param year The year to calculate the medians
-   */
-  getSeniorsPerMunicipalityByYear(year: number): InternMap {
-    return rollup(
-      this.populationData.filter((entry: Population) => entry.year == year),
-      (v) => this.calcAgeBucketPercentageRate(v, 64, Number.MAX_VALUE),
-      (d) => d.municipality_number
-    );
-  }
-
-  /**
-   * Returns the percentage of children (<18 years) for all municipalities by a given year.
-   *
-   * @param year The year to calculate the medians
-   */
-  getChildrenPerMunicipalityByYear(year: number): InternMap {
-    return rollup(
-      this.populationData.filter((entry: Population) => entry.year == year),
-      (v) => this.calcAgeBucketPercentageRate(v, -1, 18),
-      (d) => d.municipality_number
-    );
+    console.log(res);
+    return res;
   }
 
   /**
    * Returns the percentage of an age group for all municipalities by a given year.
    *
    * @param year The year to calculate the medians
+   * @param minAge The minimum age of the age group
+   * @param maxAge The maximum age of the age group
+   * @param sex The gender to get the age group for
    */
-  getAgeGroupPerMunicipalityByYear(
+  public getAgeGroupPerMunicipalityByYear(
     year: number,
     minAge: number,
-    maxAge: number
+    maxAge: number,
+    sex = 0
   ): InternMap {
     return rollup(
-      this.populationData.filter((entry: Population) => entry.year == year),
+      this.populationData.filter(
+        (entry: Population) =>
+          // 0 is default for sex and means all. Therefore, only check sex if it is not 0.
+          entry.year == year && (sex == 0 || entry.sex == sex)
+      ),
       (v) => this.calcAgeBucketPercentageRate(v, minAge, maxAge),
       (d) => d.municipality_number
     );
-  }
-
-  /**
-   * Initialize the population data.
-   */
-  initializeData(): Promise<Population[]> {
-    return this.loadPopulationData();
-  }
-
-  /**
-   * Load the population data form the csv file and map the response to the {@link Population} data structure.
-   * @private
-   */
-  private async loadPopulationData(): Promise<Population[]> {
-    return dsv(';', this.URL).then(
-      (value) =>
-        (this.populationData = value.map(
-          (v) =>
-            ({
-              year: parseInt(<string>v['jahr']),
-              municipality_number: parseInt(<string>v['gemeinde_nummer']),
-              municipality: v['gemeinde'],
-              age: parseInt(<string>v['altersjahr_100_plus']),
-              population: parseInt(<string>v['anzahl_personen']),
-            } as Population)
-        ))
-    );
-  }
-
-  /**
-   * getter for Population Data of one Municipality
-   * @param id of municipality
-   * @returns Population[] of this municipality
-   */
-  private getPopulationDataPerMunicipality(id: number): Population[] {
-    if (id === 0) {
-      return this.populationData;
-    }
-    return this.populationData.filter((p) => {
-      return p.municipality_number === id;
-    });
   }
 
   /**
@@ -196,6 +150,109 @@ export class PopulationService {
   }
 
   /**
+   * Returns the youth quotient of a given municipality for a given year.
+   * If the municipally is 0, then the quotient for the whole canton is returned.
+   *
+   * According to
+   * https://www.bfs.admin.ch/bfs/de/home/statistiken/querschnittsthemen/wohlfahrtsmessung/alle-indikatoren/gesellschaft/altersquotient.html
+   *
+   * @param municipalityId The id of the municipally
+   * @param year The year to calculate the quotient
+   */
+  public getYouthQuotient(municipalityId: number, year = 2022) {
+    return (
+      this.getNumberOfYouth(municipalityId, year) /
+      this.getNumberOfWorkers(municipalityId, year)
+    );
+  }
+
+  /**
+   * Returns the senior quotient of a given municipality for a given year.
+   * If the municipally is 0, then the quotient for the whole canton is returned.
+   *
+   * According to
+   * https://www.bfs.admin.ch/bfs/de/home/statistiken/querschnittsthemen/wohlfahrtsmessung/alle-indikatoren/gesellschaft/altersquotient.html
+   *
+   * @param municipalityId The id of the municipally
+   * @param year The year to calculate the quotient
+   */
+  public getSeniorQuotient(municipalityId: number, year = 2022) {
+    return (
+      this.getNumberOfSeniors(municipalityId, year) /
+      this.getNumberOfWorkers(municipalityId, year)
+    );
+  }
+
+  /**
+   * Returns the full quotient of a given municipality for a given year.
+   * If the municipally is 0, then the quotient for the whole canton is returned.
+   *
+   * According to
+   * https://www.bfs.admin.ch/bfs/de/home/statistiken/querschnittsthemen/wohlfahrtsmessung/alle-indikatoren/gesellschaft/altersquotient.html
+   *
+   * @param municipalityId The id of the municipally
+   * @param year The year to calculate the quotient
+   */
+  public getFullQuotient(municipalityId: number, year = 2022) {
+    return (
+      (this.getNumberOfYouth(municipalityId, year) +
+        this.getNumberOfSeniors(municipalityId, year)) /
+      this.getNumberOfWorkers(municipalityId, year)
+    );
+  }
+
+  /**
+   * Returns the number of inhabitants for one municipality.
+   *
+   * @param municipalityId The id of the municipally
+   * @param sex The gender to calculate the number of inhabitants for. 0 is default and means all.
+   * @param year The year to calculate the number of inhabitants for.
+   */
+  public getNumberOfInhabitants(municipalityId: number, sex = 0, year = 2022) {
+    return this.getPopulationDataPerMunicipality(municipalityId)
+      .filter(
+        (entry: Population) =>
+          entry.year === year && (sex === 0 || entry.sex === sex)
+      )
+      .reduce((a, b) => a + b.population, 0);
+  }
+
+  /**
+   * Load the population data form the csv file and map the response to the {@link Population} data structure.
+   * @private
+   */
+  private async loadPopulationData(): Promise<Population[]> {
+    return dsv(';', this.URL).then(
+      (value) =>
+        (this.populationData = value.map(
+          (v) =>
+            ({
+              year: parseInt(<string>v['jahr']),
+              municipality_number: parseInt(<string>v['gemeinde_nummer']),
+              municipality: v['gemeinde'],
+              sex: parseInt(<string>v['geschlecht_code']),
+              age: parseInt(<string>v['altersjahr_100_plus']),
+              population: parseInt(<string>v['anzahl_personen']),
+            } as Population)
+        ))
+    );
+  }
+
+  /**
+   * getter for Population Data of one Municipality
+   * @param id of municipality
+   * @returns Population[] of this municipality
+   */
+  private getPopulationDataPerMunicipality(id: number): Population[] {
+    if (id === 0) {
+      return this.populationData;
+    }
+    return this.populationData.filter((p) => {
+      return p.municipality_number === id;
+    });
+  }
+
+  /**
    * Calculate the median of an array of {@link Population} entries which have populations grouped in age buckets.
    *
    * @param populations
@@ -239,5 +296,46 @@ export class PopulationService {
       totalAgeGroup: totalAgeGroup,
       total: totalPopulation,
     };
+  }
+
+  /**
+   * Returns the number of workers (20 <= X <=64) in a municipality for a given year.
+   * @param municipalityId The id of the municipality
+   * @param year The year to select the data for
+   * @private
+   */
+  private getNumberOfWorkers(municipalityId: number, year: number): number {
+    return this.getPopulationDataPerMunicipality(municipalityId)
+      .filter(
+        (entry: Population) =>
+          entry.year === year && entry.age > 19 && entry.age <= 64
+      )
+      .reduce((a, b) => a + b.population, 0);
+  }
+
+  /**
+   * Returns the number of youth (<=19) in a municipality for a given year.
+   *
+   * @param municipalityId The id of the municipality
+   * @param year The year to select the data for
+   * @private
+   */
+  private getNumberOfYouth(municipalityId: number, year: number): number {
+    return this.getPopulationDataPerMunicipality(municipalityId)
+      .filter((entry: Population) => entry.year === year && entry.age <= 19)
+      .reduce((a, b) => a + b.population, 0);
+  }
+
+  /**
+   * Returns the number of seniors (>=65) in a municipality for a given year.
+   *
+   * @param municipalityId The id of the municipality
+   * @param year The year to select the data for
+   * @private
+   */
+  private getNumberOfSeniors(municipalityId: number, year: number): number {
+    return this.getPopulationDataPerMunicipality(municipalityId)
+      .filter((entry: Population) => entry.year === year && entry.age >= 65)
+      .reduce((a, b) => a + b.population, 0);
   }
 }

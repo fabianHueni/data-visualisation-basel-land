@@ -23,6 +23,13 @@ import { FooterComponent } from './footer/footer.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ViolinplotComponent } from './violinplot/violinplot.component';
 import { HistogramComponent } from './histogram/histogram.component';
+import { LegendComponent } from './legend/legend.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { registerLocaleData } from '@angular/common';
+import localeCH from '@angular/common/locales/de-CH';
+import { KeyNumbersComponent } from './key-numbers/key-numbers.component';
+import { ButtonModule } from 'primeng/button';
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -45,6 +52,8 @@ function initializeApp(populationService: PopulationService) {
     FooterComponent,
     ViolinplotComponent,
     HistogramComponent,
+    LegendComponent,
+    KeyNumbersComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,6 +66,9 @@ function initializeApp(populationService: PopulationService) {
     SliderModule,
     SelectButtonModule,
     InputNumberModule,
+    RadioButtonModule,
+    FontAwesomeModule,
+    ButtonModule,
   ],
   providers: [
     PopulationService,
@@ -69,4 +81,8 @@ function initializeApp(populationService: PopulationService) {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    registerLocaleData(localeCH, 'de-CH');
+  }
+}

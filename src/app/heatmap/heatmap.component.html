@@ -1,6 +1,11 @@
+<div class="heatmap-info">
+  <h2>Altersverteilung nach Jahr und Altersklasse</h2>
+  <app-legend [title]="'Anzahl Einwohner'" [max]="max"></app-legend>
+</div>
+
 <div #heatmapWrapper>
-  <svg id="heatmap_canvas"></svg>
-  <div id="heatmap-tooltip" class="tooltip">
+  <svg [id]="svgId"></svg>
+  <div [id]="svgId + '-tooltip'" class="tooltip">
     Einwohner: {{ tooltipData?.population }} <br />
     Jahr: {{ tooltipData?.year }} <br />
     Altersgruppe: {{ tooltipData?.ageGroup }}<br />

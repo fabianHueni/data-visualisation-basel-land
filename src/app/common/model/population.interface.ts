@@ -18,6 +18,13 @@ export interface Population {
   municipality: string;
 
   /**
+   * The sex of the corresponding data entry.
+   * 1 - Male
+   * 2 - Female
+   */
+  sex: number;
+
+  /**
    * The age for the corresponding data entry.
    * e.g. 23 or 5
    */

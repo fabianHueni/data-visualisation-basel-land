@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PopulationService } from '../common/service/population.service';
 import { Municipality } from '../common/model/population.interface';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-municipality',
@@ -11,11 +12,13 @@ import { Municipality } from '../common/model/population.interface';
 export class MunicipalityComponent implements OnInit {
   public municipalities: Municipality[] =
     this.popService.getAllMunicipalities();
+
   private _selectedMunicipality: Municipality = this.municipalities[0];
 
   constructor(
     private route: ActivatedRoute,
-    private popService: PopulationService
+    private popService: PopulationService,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -29,13 +32,23 @@ export class MunicipalityComponent implements OnInit {
     this.sortMunicipalities();
   }
 
+  /**
+   * Set the new municipality and update the url to represent the selected municipality id
+   * @param municipality
+   */
   public set selectedMunicipality(municipality: Municipality) {
     this._selectedMunicipality = municipality;
+    this.location.replaceState('/gemeinde/' + this._selectedMunicipality.id);
   }
+
   public get selectedMunicipality(): Municipality {
     return this._selectedMunicipality;
   }
 
+  /**
+   * Sort the municipalities descending by the name
+   * @private
+   */
   private sortMunicipalities() {
     this.municipalities = this.municipalities.sort((a, b) =>
       a.name < b.name ? -1 : 1

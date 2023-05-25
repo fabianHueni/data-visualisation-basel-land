@@ -1,0 +1,22 @@
+h1 {
+  p-dropdown {
+    ::ng-deep .p-dropdown {
+      border: none;
+      border-bottom: 2px solid black;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+
+      .p-dropdown-label {
+        font-size: 3rem;
+        font-family: "Nova Round", Sans-serif;
+        color: black;
+        font-weight: 600;
+      }
+
+      .p-icon-wrapper {
+        color: black;
+      }
+    }
+  }
+}

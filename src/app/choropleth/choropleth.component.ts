@@ -9,19 +9,17 @@ import {
 import { GeoPath } from 'd3-geo';
 import { mapData } from './map-data';
 import {
-  bin,
   geoPath,
   geoTransform,
-  histogram,
   interpolateBlues,
   scaleLinear,
   select,
-  selectAll,
 } from 'd3';
 import bbox from '@turf/bbox';
 import { Selection } from 'd3-selection';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-choropleth',
@@ -29,20 +27,49 @@ import { Subject } from 'rxjs';
   styleUrls: ['./choropleth.component.scss'],
 })
 export class ChoroplethComponent implements AfterViewInit {
-  public tooltipData: any = null;
+  /**
+   * A unique id to identify the svg elements of this component.
+   * Necessary to avoid selection conflicts with multiple equal id's.
+   */
+  readonly plotId = `plot-${uuid()}`;
 
+  /**
+   * A reference to the tooltip template. Will be displayed on hover in a wrapped div.
+   */
   @Input()
-  public tooltipRef?: TemplateRef<any>;
+  public tooltipTemplate?: TemplateRef<any>;
 
+  /**
+   * A callback function to get the color for a given shape. The color depends on the values of the data.
+   *
+   * @param d The data from the shape to get the color
+   */
   @Input()
-  public colorInterpolation: (d: any) => string = (d) => '';
+  public colorCallback: (d: any) => string = (_) => '';
 
+  /**
+   * A subject to get notified when to redraw the map.
+   * Is necessary due to the data changes in the parent component and this component does not know about the data.
+   * Especially the color of the shapes needs to be updated.
+   */
   @Input()
   public changSubject: Subject<boolean> | undefined;
 
+  /**
+   * The wrapper div of this plot. Is needed to get the width and create a responsive plot.
+   */
   @ViewChild('mapWrapper')
   public mapWrapper: ElementRef | undefined;
 
+  /**
+   * The data to show in the tooltip of the choropleth.
+   */
+  public tooltipData: any = null;
+
+  /**
+   * The tooltip element in which the tooltip content is displayed.
+   * @private
+   */
   private tooltip: Selection<any, any, any, any> | undefined;
 
   /**
@@ -52,7 +79,7 @@ export class ChoroplethComponent implements AfterViewInit {
   private width = 0;
 
   /**
-   * The hight of the svg-canvas. Depends on the available space.
+   * The height of the svg-canvas. Depends on the available space.
    * @private
    */
   private height = 0;
@@ -70,49 +97,35 @@ export class ChoroplethComponent implements AfterViewInit {
     this.width = this.mapWrapper?.nativeElement.offsetWidth;
     this.constructTooltip();
     this.constructPathGenerator();
-    this.renderMap();
+    this.setupChoropleth();
 
     this.changSubject?.subscribe((_) => {
       this.redraw();
-      this.drawLegend();
     });
   }
 
   /**
-   * Render the initial map
+   * Render the initial map and set the correct width and size.
    */
-  private renderMap() {
-    select('#mapCanvas')
+  private setupChoropleth() {
+    select('#' + this.plotId + '-choropleth')
       .attr('width', this.width)
       .attr('height', this.height)
       .append('g');
 
-    this.drawLegend();
     this.redraw();
   }
 
-  private drawLegend() {
-    const size = 20;
-    select('#legend')
-      .attr('width', this.width)
-      .attr('height', 40)
-      .selectAll('legendRect')
-      .data([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
-      .enter()
-      .append('rect')
-      .attr('y', 0)
-      .attr('x', (d, i) => {
-        return this.width - 40 - i * (size + 2);
-      })
-      .attr('height', size)
-      .attr('width', size)
-      .style('fill', (d) => interpolateBlues(d));
-  }
-
+  /**
+   * Remove and redraw the full choropleth. We do this when the data is changed in the parent component.
+   * @private
+   */
   private redraw() {
-    select('#mapCanvas').selectAll('path').remove();
+    select('#' + this.plotId + '-choropleth')
+      .selectAll('path')
+      .remove();
 
-    select('#mapCanvas')
+    select('#' + this.plotId + '-choropleth')
       .selectAll('path')
       .data(mapData.features)
       .enter()
@@ -122,7 +135,7 @@ export class ChoroplethComponent implements AfterViewInit {
       .attr('stroke', 'gray')
       .attr('stroke-width', 0.5)
       .attr('fill', (d) => {
-        return this.colorInterpolation(d);
+        return this.colorCallback(d);
       })
       .on('mouseover', (event: MouseEvent) => {
         this.mouseover(event);
@@ -211,7 +224,7 @@ export class ChoroplethComponent implements AfterViewInit {
    * @private
    */
   private constructTooltip() {
-    this.tooltip = select('#tooltip')
+    this.tooltip = select('#' + this.plotId + '-tooltip')
       .style('opacity', 0)
       .style('background-color', 'white')
       .style('border', 'solid')

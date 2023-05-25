@@ -1,12 +1,5 @@
-<h1>Demographie Gemeinde {{ selectedMunicipality.name }}</h1>
-
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus amet
-  asperiores at eius facere incidunt natus neque numquam placeat porro quidem
-  quod, recusandae reiciendis sapiente sunt tempore, velit voluptates!
-</p>
-
-<div class="flex justify-content-between mb-6">
+<h1>
+  Demographie Gemeinde
   <p-dropdown
     [options]="municipalities"
     optionLabel="name"
@@ -14,7 +7,15 @@
     [filter]="true"
     filterBy="name"
   ></p-dropdown>
-</div>
+</h1>
+
+<p>
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus amet
+  asperiores at eius facere incidunt natus neque numquam placeat porro quidem
+  quod, recusandae reiciendis sapiente sunt tempore, velit voluptates!
+</p>
+
+<app-key-numbers [municipalityId]="selectedMunicipality.id"></app-key-numbers>
 
 <!-- <p-card>
   <app-heatmap [id]="selectedMunicipality.id"></app-heatmap>
