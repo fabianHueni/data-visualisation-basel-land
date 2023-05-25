@@ -22,6 +22,7 @@
         <p-button
           [icon]="yearInterval === 0 ? 'pi pi-play' : 'pi pi-pause'"
           (onClick)="toggleYearInterval()"
+          styleClass="p-button-outlined"
           pTooltip="Jahre automatisch hochzählen"
           tooltipPosition="bottom"
         ></p-button>
@@ -48,7 +49,6 @@
       <span class="p-float-label">
         <p-inputNumber
           inputStyleClass="number-input-width"
-          inputStyle="width: 100px !important;"
           inputId="min-age"
           [(ngModel)]="minAge"
           [min]="0"
@@ -82,12 +82,6 @@
     ></p-dropdown>
   </div>
 
-  <!--  <p-slider
-    [(ngModel)]="selectedYear"
-    [step]="1"
-    [min]="2003"
-    [max]="2022"
-  ></p-slider>-->
   <app-legend
     [title]="selectedDataset.legendTitle"
     [min]="selectedDataset.min"
@@ -104,14 +98,30 @@
 <app-key-numbers [municipalityId]="0"></app-key-numbers>
 
 <h1>Altersverteilung Basel-Land</h1>
-<p>
-  Diese Heatmap Grafik zeigt die Altersverteilung in 5-Jahresklassen pro
-  Kalenderjahr seit 2003 an. Je dunkler die Farbe, desto mehr Personen mit einem
-  Alter in dieser Altersklasse Alters leben in Basel-Land.
-</p>
+
 <p-card class="mb-4">
-  <app-heatmap [id]="0"></app-heatmap>
+  <app-heatmap [id]="0">
+    <p>
+      Diese Heatmap Grafik zeigt die Altersverteilung in 5-Jahresklassen pro
+      Kalenderjahr seit 2003 an. Je dunkler die Farbe, desto mehr Personen mit
+      einem Alter in dieser Altersklasse Alters leben in Basel-Land.
+    </p>
+  </app-heatmap>
 </p-card>
+
+<div class="chart-grid" [style]="'height: 100%'">
+  <p-card>
+    <app-development-quotients
+      [selectedMunicipalityId]="0"
+    ></app-development-quotients>
+  </p-card>
+
+  <p-card>
+    <app-development-median
+      [selectedMunicipalityId]="0"
+    ></app-development-median>
+  </p-card>
+</div>
 
 <!-- Templates of tooltips for different data sets-->
 <ng-template #tooltipTemplate let-tooltipData="data">
@@ -122,25 +132,39 @@
     {{ this.getDataByShape(tooltipData) }} Jahre
   </ng-container>
 
+  <ng-container *ngIf="selectedDataset.value === 'elderly'">
+    <b>{{ tooltipData?.properties.name }} </b>
+    <br />
+    Anteil Betagte:
+    {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
+    Total Betagte:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup | number : "" : "de-CH"
+    }}<br />
+    Total Einwohner:
+    {{ this.getDataByShape(tooltipData)?.total | number : "" : "de-CH" }}
+  </ng-container>
+
   <ng-container *ngIf="selectedDataset.value === 'seniors'">
     <b>{{ tooltipData?.properties.name }} </b>
     <br />
-    Seniorenanteil:
+    Anteil Hochbetagte:
     {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
-    Total Senioren:
-    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Hochbetagte:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup | number : "" : "de-CH"
+    }}<br />
     Total Einwohner:
-    {{ this.getDataByShape(tooltipData)?.total }}
+    {{ this.getDataByShape(tooltipData)?.total | number : "" : "de-CH" }}
   </ng-container>
 
   <ng-container *ngIf="selectedDataset.value === 'age-buckets'">
     <b>{{ tooltipData?.properties.name }} </b>
     <br />
-    Kinderanteil:
+    Anteil Altersklasse:
     {{ this.getDataByShape(tooltipData)?.percentageAgeGroup | percent }} <br />
-    Total Kinder:
-    {{ this.getDataByShape(tooltipData)?.totalAgeGroup }}<br />
+    Total Altersklasse:
+    {{ this.getDataByShape(tooltipData)?.totalAgeGroup | number : "" : "de-CH"
+    }}<br />
     Total Einwohner:
-    {{ this.getDataByShape(tooltipData)?.total }}
+    {{ this.getDataByShape(tooltipData)?.total | number : "" : "de-CH" }}
   </ng-container>
 </ng-template>

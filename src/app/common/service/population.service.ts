@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { dsv, InternMap, median, rollup } from 'd3';
+import { dsv, InternMap, median, rollup, rollups } from 'd3';
 import {
   Municipality,
   Population,
   PopulationByGroups,
 } from '../model/population.interface';
+import { Observable } from 'rxjs';
 
 export const AGE_GROUPS: string[] = [
   '0-4',
@@ -103,6 +104,84 @@ export class PopulationService {
       (v) => this.calcAgeBucketPercentageRate(v, minAge, maxAge),
       (d) => d.municipality_number
     );
+  }
+
+  /**
+   * Returns the median for each year for a given municipality.
+   *
+   * @param municipalityId The municipality id to calculate the medians for
+   */
+  public getMedianAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<InternMap> {
+    return new Promise((resolve, reject) => {
+      const result = rollup(
+        this.getPopulationDataPerMunicipality(municipalityId),
+        (v) => this.calcMedian(v),
+        (d) => d.year
+      );
+      resolve(result);
+    });
+  }
+
+  /**
+   * Returns the youth quotient for each year for a given municipality.
+   *
+   * @param municipalityId The municipality id to calculate the medians for
+   */
+  public getYouthQuotientAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const result = [];
+      for (let year = 2003; year <= 2022; year++) {
+        result.push({
+          year,
+          value: this.getYouthQuotient(municipalityId, year),
+        });
+      }
+      resolve(result);
+    });
+  }
+
+  /**
+   * Returns the senior quotient for each year for a given municipality.
+   *
+   * @param municipalityId The municipality id to calculate the medians for
+   */
+  public getSeniorQuotientAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const result = [];
+      for (let year = 2003; year <= 2022; year++) {
+        result.push({
+          year,
+          value: this.getSeniorQuotient(municipalityId, year),
+        });
+      }
+      resolve(result);
+    });
+  }
+
+  /**
+   * Returns the full quotient for each year for a given municipality.
+   *
+   * @param municipalityId The municipality id to calculate the medians for
+   */
+  public getFullQuotientAgePerYearByMunicipality(
+    municipalityId: number
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const result = [];
+      for (let year = 2003; year <= 2022; year++) {
+        result.push({
+          year,
+          value: this.getFullQuotient(municipalityId, year),
+        });
+      }
+      resolve(result);
+    });
   }
 
   /**

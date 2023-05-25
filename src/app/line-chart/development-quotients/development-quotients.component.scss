@@ -1,0 +1,15 @@
+.text-underline {
+  text-decoration: underline;
+}
+
+.chart {
+  .chart-info {
+    margin-left: 24px;
+  }
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
+    .chart-info {
+      margin-left: 0;
+    }
+  }
+}

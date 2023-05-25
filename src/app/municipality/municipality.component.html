@@ -9,11 +9,7 @@
   ></p-dropdown>
 </h1>
 
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus amet
-  asperiores at eius facere incidunt natus neque numquam placeat porro quidem
-  quod, recusandae reiciendis sapiente sunt tempore, velit voluptates!
-</p>
+<p></p>
 
 <app-key-numbers [municipalityId]="selectedMunicipality.id"></app-key-numbers>
 
@@ -24,3 +20,16 @@
 <p-card>
   <app-histogram [id]="selectedMunicipality.id"></app-histogram>
 </p-card>
+<div class="chart-grid" [style]="'height: 100%'">
+  <p-card>
+    <app-development-quotients
+      [selectedMunicipalityId]="selectedMunicipality.id"
+    ></app-development-quotients>
+  </p-card>
+
+  <p-card>
+    <app-development-median
+      [selectedMunicipalityId]="selectedMunicipality.id"
+    ></app-development-median>
+  </p-card>
+</div>

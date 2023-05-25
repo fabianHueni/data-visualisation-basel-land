@@ -1,0 +1,12 @@
+<div class="chart">
+  <div class="chart-info">
+    <h2>Zeitliche Entwicklung des Medianalters</h2>
+    <p>Diese Grafik zeigt die zeitliche Entwicklung des Medianalters</p>
+  </div>
+  <app-legend
+    class="chart-info"
+    *ngIf="data.size > 0"
+    [lineData]="data"
+  ></app-legend>
+  <app-line-chart *ngIf="data.size > 0" [data]="data"></app-line-chart>
+</div>
