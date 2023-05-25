@@ -1,0 +1,17 @@
+<div [id]="plotId" #lineChartWrapper>
+  <svg [id]="plotId + '-line-chart'"></svg>
+
+  <div [id]="plotId + '-tooltip'" class="tooltip">
+    <div class="tooltip-inner">
+      <span></span> Jahr <b>{{ tooltipData?.year }}</b>
+      <ng-container *ngFor="let entry of tooltipData?.value">
+        <span
+          class="line-indicator"
+          [style.background-color]="entry.color"
+        ></span>
+        {{ entry.label }}
+        <b>{{ entry.value | number : "1.0-2" }}</b>
+      </ng-container>
+    </div>
+  </div>
+</div>

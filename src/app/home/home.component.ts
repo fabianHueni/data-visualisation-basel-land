@@ -1,21 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-  ViewRef,
-} from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { PopulationService } from '../common/service/population.service';
-import { interpolateOranges } from 'd3-scale-chromatic';
 import { Subject } from 'rxjs';
-import {
-  interpolateBlues,
-  interpolateCool,
-  interpolateGreens,
-  scaleLinear,
-  select,
-} from 'd3';
+import { interpolateBlues } from 'd3';
 import { Dataset } from '../common/model/dataset.interface';
 
 @Component({
