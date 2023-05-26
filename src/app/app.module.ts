@@ -21,6 +21,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { HeatmapComponent } from './heatmap/heatmap.component';
 import { FooterComponent } from './footer/footer.component';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { HistogramComponent } from './histogram/histogram.component';
 import { LegendComponent } from './legend/legend.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -51,6 +52,7 @@ function initializeApp(populationService: PopulationService) {
     HeatmapComponent,
     ChoroplethComponent,
     FooterComponent,
+    HistogramComponent,
     LegendComponent,
     KeyNumbersComponent,
     LineChartComponent,

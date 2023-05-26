@@ -13,6 +13,19 @@
   weiteren Daten ergänzt werden.
 </p>
 
+<h3>Zur Benützung der App</h3>
+<p>
+  Auf der Startseite werden die Daten des ganzen Kanton Basel-Land dargestellt.
+  Sie können auf eine Gemeinde auf der Karte oder in der Navigation auf
+  'Gemeinden' klicken um auf die Detailanalyse einer einzelnen Gemeinde zu
+  gelangen.
+</p>
+<p>
+  Diese App wurde im Jahr 2023 als Teil der Vorlesung 'Open Data' entwickelt.
+  Entsprechend werden hier nur die Daten vom Jahr 2003 bis 2022 dargestellt.
+  Weitere Detail zu den Daten finden Sie unter 'Daten'
+</p>
+
 <p-card>
   <div class="flex justify-content-between mb-6 gap-4 flex-column lg:flex-row">
     <div class="flex gap-4 lg:gap-6 sm:flex-column flex-column lg:flex-row">
@@ -108,6 +121,19 @@
     </p>
   </app-heatmap>
 </p-card>
+
+<div class="card">
+  <p-card>
+    <app-histogram [id]="0">
+      <p>
+        Dieses zweiseitige Histogramm zeigt die Altersverteilung für den ganzen
+        Kanton für ein Kalenderjahr an, aufgeteilt nach Geschlecht. Dabei kann
+        das Jahr sowie die Altersunterteilung ausgewählt werden. Das Farbschema
+        ist klassisch gewählt: Rosa = Frauen, Blau = Männer.
+      </p>
+    </app-histogram>
+  </p-card>
+</div>
 
 <div class="chart-grid" [style]="'height: 100%'">
   <p-card>

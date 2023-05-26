@@ -30,8 +30,7 @@ export class HomeComponent {
   );
 
   /**
-   * An array with all years from 2003 to 2022.
-   * These are the years we have data to display.
+   * Possible Selection Options for Sex
    */
   public sex = [
     { label: 'Alle', value: 0 },

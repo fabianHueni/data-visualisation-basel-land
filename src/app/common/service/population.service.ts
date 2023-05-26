@@ -31,6 +31,20 @@ export const AGE_GROUPS: string[] = [
   '100+',
 ];
 
+export const AGE_GROUPS_10: string[] = [
+  '0-9',
+  '10-19',
+  '20-29',
+  '30-39',
+  '40-49',
+  '50-59',
+  '60-69',
+  '70-79',
+  '80-89',
+  '90-99',
+  '100+',
+];
+
 @Injectable({
   providedIn: 'root',
 })
@@ -415,5 +429,118 @@ export class PopulationService {
     return this.getPopulationDataPerMunicipality(municipalityId)
       .filter((entry: Population) => entry.year === year && entry.age >= 65)
       .reduce((a, b) => a + b.population, 0);
+  }
+
+  public getPopulationByYearAndMunicipality(
+    year: number,
+    municipality_number: number
+  ): Population[] {
+    let population = this.getPopulationDataPerMunicipality(
+      municipality_number
+    ).filter((p: Population) => p.year === year);
+    if (municipality_number === 0)
+      population = this.concatPopulationOfMunicipality(population, year);
+    return population;
+  }
+
+  private concatPopulationOfMunicipality(
+    population: Population[],
+    year: number
+  ): Population[] {
+    let concatedData: Population[] = [];
+    for (let age = 0; age <= 100; age++) {
+      let popDataByAge = population.filter((entry) => entry.age === age);
+      let malePopulation: Population = {
+        age: age,
+        municipality: 'Kanton',
+        municipality_number: 0,
+        year: year,
+        sex: 1,
+        population: 0,
+      };
+      let femalePopulation: Population = {
+        age: age,
+        municipality: 'Kanton',
+        municipality_number: 0,
+        year: year,
+        sex: 2,
+        population: 0,
+      };
+      for (const p of popDataByAge) {
+        if (p.sex === 1) {
+          malePopulation.population += p.population;
+        } else {
+          femalePopulation.population += p.population;
+        }
+      }
+      concatedData.push(malePopulation, femalePopulation);
+    }
+    return concatedData;
+  }
+
+  public getPopulationByYearAndMunicipality5YearAgeGroup(
+    year: number,
+    municipality_number: number
+  ): PopulationByGroups[] {
+    const pop = this.getPopulationByYearAndMunicipality(
+      year,
+      municipality_number
+    );
+    const popByGroupsM: PopulationByGroups[] = [];
+    const popByGroupsF: PopulationByGroups[] = [];
+    for (const g of AGE_GROUPS) {
+      popByGroupsM.push({
+        year: year,
+        ageGroup: g,
+        population: 0,
+        sex: 1,
+      });
+      popByGroupsF.push({
+        year: year,
+        ageGroup: g,
+        population: 0,
+        sex: 2,
+      });
+    }
+    for (const p of pop) {
+      const index = Math.floor(p.age / 5);
+      p.sex === 1
+        ? (popByGroupsM[index].population += p.population)
+        : (popByGroupsF[index].population += p.population);
+    }
+    return popByGroupsM.concat(...popByGroupsF);
+  }
+
+  public getPopulationByYearAndMunicipality10YearAgeGroup(
+    year: number,
+    municipality_number: number
+  ): PopulationByGroups[] {
+    const pop = this.getPopulationByYearAndMunicipality(
+      year,
+      municipality_number
+    );
+    const popByGroupsM: PopulationByGroups[] = [];
+    const popByGroupsF: PopulationByGroups[] = [];
+    for (const g of AGE_GROUPS_10) {
+      popByGroupsM.push({
+        year: year,
+        ageGroup: g,
+        population: 0,
+        sex: 1,
+      });
+      popByGroupsF.push({
+        year: year,
+        ageGroup: g,
+        population: 0,
+        sex: 2,
+      });
+    }
+    for (const p of pop) {
+      const index = Math.floor(p.age / 10);
+      p.sex === 1
+        ? (popByGroupsM[index].population += p.population)
+        : (popByGroupsF[index].population += p.population);
+    }
+    return popByGroupsM.concat(...popByGroupsF);
   }
 }
