@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  ViewChild,
+} from '@angular/core';
 import { axisBottom, axisLeft, max, scaleBand, scaleLinear, select } from 'd3';
 import {
   Population,
@@ -19,10 +25,15 @@ import { v4 as uuid } from 'uuid';
 })
 export class HistogramComponent implements AfterViewInit {
   readonly plotId = `plot-${uuid()}`;
-
   public years: number[] = [];
-  private max = 0;
 
+  /**
+   * The wrapper div of this plot. Is needed to get the width and create a responsive plot.
+   */
+  @ViewChild('histogramWrapper')
+  public histogramWrapper: ElementRef | undefined;
+
+  private max = 0;
   private population: Population[] = [];
   private populationByGroups: PopulationByGroups[] = [];
   private svg: any;
@@ -78,6 +89,9 @@ export class HistogramComponent implements AfterViewInit {
   constructor(private populationService: PopulationService) {}
 
   ngAfterViewInit(): void {
+    this.width =
+      this.histogramWrapper?.nativeElement.offsetWidth - this.margin * 2;
+
     for (let year = 2022; year > 2002; year--) {
       this.years.push(year);
     }
@@ -146,7 +160,7 @@ export class HistogramComponent implements AfterViewInit {
   }
 
   private createSvg(): void {
-    this.svg = select('#histogram_canvas')
+    this.svg = select('#' + this.plotId + '-histogram')
       .attr('width', this.width + this.margin * 2)
       .attr('height', this.height + this.margin * 2)
       .append('g')
@@ -182,7 +196,6 @@ export class HistogramComponent implements AfterViewInit {
   }
   private drawBarsM(data: Population[]): void {
     data = data.filter((d) => d.sex === 1);
-
     // Create and fill the bars
     this.svg
       .selectAll('bars')
@@ -329,7 +342,6 @@ export class HistogramComponent implements AfterViewInit {
       .style('border-width', '2px')
       .style('border-radius', '5px')
       .style('padding', '5px');
-    console.log(this.tooltip);
   }
 
   /**
@@ -360,7 +372,6 @@ export class HistogramComponent implements AfterViewInit {
    */
   private mouseleave(event: MouseEvent) {
     this.tooltip?.style('display', 'none');
-    console.log('mouseLeave');
 
     // @ts-ignore
     select(event.currentTarget).style('stroke-width', 0);
