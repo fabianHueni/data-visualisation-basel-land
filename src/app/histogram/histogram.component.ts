@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input } from '@angular/core';
 import { axisBottom, axisLeft, max, scaleBand, scaleLinear, select } from 'd3';
 import {
   Population,
@@ -10,13 +10,16 @@ import {
   PopulationService,
 } from '../common/service/population.service';
 import { Selection } from 'd3-selection';
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-histogram',
   templateUrl: './histogram.component.html',
   styleUrls: ['./histogram.component.scss'],
 })
-export class HistogramComponent {
+export class HistogramComponent implements AfterViewInit {
+  readonly plotId = `plot-${uuid()}`;
+
   public years: number[] = [];
   private max = 0;
 
@@ -74,7 +77,7 @@ export class HistogramComponent {
 
   constructor(private populationService: PopulationService) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     for (let year = 2022; year > 2002; year--) {
       this.years.push(year);
     }
@@ -191,15 +194,15 @@ export class HistogramComponent {
       .attr('width', (d: Population) => this.x(d.population) - this.x(0))
       .attr('height', this.height / 100 - 1)
       .attr('fill', '#6A82DF')
-      .on('mouseover', (event: MouseEvent) => {
-        this.mouseover(event);
-      })
-      .on('mouseout', (event: MouseEvent) => {
-        this.mouseleave(event);
+      .on('mouseover', (event: MouseEvent, data: any) => {
+        this.mouseHover(event, data);
       })
       .on('mousemove', (event: MouseEvent, data: any) =>
-        this.mousemove(event, data)
-      );
+        this.mouseHover(event, data)
+      )
+      .on('mouseout', (event: MouseEvent) => {
+        this.mouseleave(event);
+      });
   }
 
   private drawBarsF(data: Population[]): void {
@@ -217,14 +220,14 @@ export class HistogramComponent {
       .attr('width', (d: Population) => this.x(0) - this.x(-d.population))
       .attr('height', this.height / 100 - 1)
       .attr('fill', 'pink')
-      .on('mouseover', (event: MouseEvent) => {
-        this.mouseover(event);
+      .on('mouseover', (event: MouseEvent, data: any) => {
+        this.mouseHover(event, data);
       })
       .on('mouseout', (event: MouseEvent) => {
         this.mouseleave(event);
       })
       .on('mousemove', (event: MouseEvent, data: any) =>
-        this.mousemove(event, data)
+        this.mouseHover(event, data)
       );
   }
 
@@ -271,14 +274,14 @@ export class HistogramComponent {
       )
       .attr('height', this.yGroup.bandwidth())
       .attr('fill', '#6A82DF')
-      .on('mouseover', (event: MouseEvent) => {
-        this.mouseover(event);
+      .on('mouseover', (event: MouseEvent, data: any) => {
+        this.mouseHover(event, data);
       })
       .on('mouseout', (event: MouseEvent) => {
         this.mouseleave(event);
       })
       .on('mousemove', (event: MouseEvent, data: any) =>
-        this.mousemove(event, data)
+        this.mouseHover(event, data)
       );
   }
 
@@ -300,14 +303,14 @@ export class HistogramComponent {
       )
       .attr('height', this.yGroup.bandwidth())
       .attr('fill', 'pink')
-      .on('mouseover', (event: MouseEvent) => {
-        this.mouseover(event);
+      .on('mouseover', (event: MouseEvent, data: any) => {
+        this.mouseHover(event, data);
       })
       .on('mouseout', (event: MouseEvent) => {
         this.mouseleave(event);
       })
       .on('mousemove', (event: MouseEvent, data: any) =>
-        this.mousemove(event, data)
+        this.mouseHover(event, data)
       );
   }
 
@@ -318,28 +321,15 @@ export class HistogramComponent {
    * @private
    */
   private constructTooltip() {
-    this.tooltip = select('#histogram')
+    this.tooltip = select('#' + this.plotId + '-tooltip')
+      .style('display', 'none')
       .style('opacity', 1)
       .style('background-color', 'white')
       .style('border', 'solid')
       .style('border-width', '2px')
       .style('border-radius', '5px')
       .style('padding', '5px');
-  }
-
-  /**
-   * Show the tooltip when the mouse is over a shape and restyle the border (stroke) of the current shape.
-   *
-   * @param event The mouse event to get the current target and therefore the correct shape.
-   * @private
-   */
-  private mouseover(event: MouseEvent) {
-    this.tooltip?.style('opacity', 1);
-
-    // @ts-ignore
-    select(event.currentTarget)
-      .style('stroke', 'black')
-      .style('stroke-width', 1);
+    console.log(this.tooltip);
   }
 
   /**
@@ -349,8 +339,14 @@ export class HistogramComponent {
    * @param data The feature of the hovered shape from the geojson file
    * @private
    */
-  private mousemove(event: MouseEvent, data: any) {
+  private mouseHover(event: MouseEvent, data: any) {
+    // @ts-ignore
+    select(event.currentTarget)
+      .style('stroke', 'black')
+      .style('stroke-width', 1);
+
     this.tooltipData = data;
+    this.tooltip?.style('display', 'block');
     this.tooltip
       ?.style('left', event.pageX + 15 + 'px')
       .style('top', event.pageY + 'px');
@@ -363,7 +359,8 @@ export class HistogramComponent {
    * @private
    */
   private mouseleave(event: MouseEvent) {
-    this.tooltip?.style('opacity', 1);
+    this.tooltip?.style('display', 'none');
+    console.log('mouseLeave');
 
     // @ts-ignore
     select(event.currentTarget).style('stroke-width', 0);

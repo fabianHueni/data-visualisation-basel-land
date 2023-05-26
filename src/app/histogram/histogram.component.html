@@ -23,8 +23,9 @@
 
 <div #heatmapWrapper>
   <svg id="histogram_canvas"></svg>
-  <div id="'tooltip'" class="tooltip">
+  <div [id]="plotId + '-tooltip'" class="tooltip">
     Alter: {{ tooltipData?.age }} <br />
-    Einwohneranzahl: {{ tooltipData?.population }} <br />
+    Einwohneranzahl: {{ tooltipData?.population | number : "" : "de-CH" }}
+    <br />
   </div>
 </div>
