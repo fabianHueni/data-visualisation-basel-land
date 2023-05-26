@@ -358,6 +358,7 @@ export class HistogramComponent implements AfterViewInit {
       .style('stroke-width', 1);
 
     this.tooltipData = data;
+
     this.tooltip?.style('display', 'block');
     this.tooltip
       ?.style('left', event.pageX + 15 + 'px')
