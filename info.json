@@ -1,0 +1,11 @@
+{
+  "title": "Die Überalterung des Kanton Basel-Landschaft in Grafiken",
+  "description": "Demographische Indikatoren sind wichtige Merkmale zur Abklärung von Infrastruktur- und Dienstleistungsbedürfnissen in den Gemeinden. Die hier aufbereiteten Daten können einen Beitrag dazu leisten, dass private (z.B. Betreiber von Alters- und Pflegeeinrichtungen etc.) und öffentliche Institutionen (Gemeinden, Kanton etc.) demographische Veränderungen besser einschätzen und ihre Planung entsprechend anpassen können.",
+  "authors": [
+    { "name": "Fabian Hüni", "email": "fabian.hueni@students.unibe.ch" },
+    { "name": "Linda Hoch", "email": "linda.hoch@students.unibe.ch" }
+  ],
+  "date": "2023-05-31",
+  "category": "society",
+  "software_license": "GPL-3.0 license"
+}
