@@ -52,6 +52,8 @@ export class PopulationService {
   private readonly URL = 'assets/data/bevoelkerung_nach_gemeinde_edited.csv';
   private populationData: Population[] = [];
 
+  private numberOfWorkersPerCityAndYear = new Map<string, number>();
+
   constructor() {
     this.loadPopulationData();
   }
@@ -397,12 +399,21 @@ export class PopulationService {
    * @private
    */
   private getNumberOfWorkers(municipalityId: number, year: number): number {
-    return this.getPopulationDataPerMunicipality(municipalityId)
-      .filter(
-        (entry: Population) =>
-          entry.year === year && entry.age > 19 && entry.age <= 64
-      )
-      .reduce((a, b) => a + b.population, 0);
+    const identifier = municipalityId + '-' + year;
+    if (this.numberOfWorkersPerCityAndYear.has(identifier)) {
+      return this.numberOfWorkersPerCityAndYear.get(identifier) ?? 0;
+    } else {
+      this.numberOfWorkersPerCityAndYear.set(
+        identifier,
+        this.getPopulationDataPerMunicipality(municipalityId)
+          .filter(
+            (entry: Population) =>
+              entry.year === year && entry.age > 19 && entry.age <= 64
+          )
+          .reduce((a, b) => a + b.population, 0)
+      );
+      return this.numberOfWorkersPerCityAndYear.get(identifier) ?? 0;
+    }
   }
 
   /**
@@ -438,8 +449,9 @@ export class PopulationService {
     let population = this.getPopulationDataPerMunicipality(
       municipality_number
     ).filter((p: Population) => p.year === year);
-    if (municipality_number === 0)
+    if (municipality_number === 0) {
       population = this.concatPopulationOfMunicipality(population, year);
+    }
     return population;
   }
 

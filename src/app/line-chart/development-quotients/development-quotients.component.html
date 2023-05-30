@@ -32,5 +32,13 @@
     class="chart-info"
     [lineData]="data"
   ></app-legend>
+  <div class="flex justify-content-center">
+    <i
+      *ngIf="isLoading"
+      class="pi pi-spin pi-spinner"
+      style="font-size: 2rem"
+    ></i>
+  </div>
+
   <app-line-chart *ngIf="this.data.size > 0" [data]="data"></app-line-chart>
 </div>
