@@ -32,6 +32,7 @@ import { ButtonModule } from 'primeng/button';
 import { LineChartComponent } from './line-chart/line-chart.component';
 import { DevelopmentQuotientsComponent } from './line-chart/development-quotients/development-quotients.component';
 import { DevelopmentMedianComponent } from './line-chart/development-median/development-median.component';
+import {DialogModule} from "primeng/dialog";
 
 /**
  * Load the data for the visualizations bevor startup the app
@@ -73,6 +74,7 @@ function initializeApp(populationService: PopulationService) {
     RadioButtonModule,
     FontAwesomeModule,
     ButtonModule,
+    DialogModule,
   ],
   providers: [
     PopulationService,

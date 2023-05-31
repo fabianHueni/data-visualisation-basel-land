@@ -1,4 +1,6 @@
-<h1>Die Überalterung des Kanton Basel-Landschaft in Grafiken</h1>
+<h1>
+  Die Entwicklung der Altersstruktur des Kantons Basel-Landschaft in Grafiken
+</h1>
 
 <p>
   Demographische Indikatoren sind wichtige Merkmale zur Abklärung von
@@ -24,10 +26,19 @@
   Diese App wurde im Jahr 2023 als Teil der Vorlesung "Durchführung eines Open
   Data Projekts" der Universität Bern entwickelt. Daher werden hier nur die
   Daten für die Jahre 2003-2022 dargestellt. Weitere Details zu den Daten finden
-  Sie ind er Navigation oben im Reiter "Daten".
+  Sie in der Navigation oben im Reiter "Daten".
 </p>
 
 <p-card>
+  <h2>Geographische Altersverteilung</h2>
+  <p class="choropleth-intro">
+    Die Karte bietet die Möglichkeit vier verschiedene Kennzahlen zur
+    Altersverteilung zu visualisieren. Mit dem Dropdown können Sie zwischen dem
+    Medianalter, dem prozentualen Anteil an betagten (65+) und hochbetagten
+    (80+) Personen sowie einer beliebigen Altersklasse wählen. Bei letzterer
+    Option können Sie beliebige Altersklasse mit den beiden Eingabefeldern
+    definieren.
+  </p>
   <div class="flex justify-content-between mb-6 gap-4 flex-column lg:flex-row">
     <div class="flex gap-4 lg:gap-6 sm:flex-column flex-column lg:flex-row">
       <!-- Year selection-->
@@ -84,11 +95,6 @@
     </div>
 
     <!-- Dataset selection-->
-    <!--    <p-selectButton
-      [options]="datasets"
-      [(ngModel)]="selectedDataset"
-      optionLabel="label"
-    ></p-selectButton>-->
     <p-dropdown
       [options]="datasets"
       [(ngModel)]="selectedDataset"
@@ -109,6 +115,7 @@
   ></app-choropleth>
 </p-card>
 
+<h1>Basel-Land im Jahr 2023</h1>
 <app-key-numbers [municipalityId]="0"></app-key-numbers>
 
 <h1>Altersverteilung Basel-Land</h1>

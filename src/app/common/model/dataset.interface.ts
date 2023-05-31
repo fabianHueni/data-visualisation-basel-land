@@ -10,6 +10,8 @@ export interface Dataset {
   colorScheme: (t: number) => string;
   tooltipRef: () => TemplateRef<any> | undefined;
   legendTitle: string;
+
+  description: string;
   min: number;
   max: number;
 }

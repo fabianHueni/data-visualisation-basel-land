@@ -8,4 +8,33 @@
       {{ item.label }}
     </a>
   </div>
+
+  <div class="mobile-menu">
+    <i
+      class="pi pi-bars"
+      style="font-size: 2rem"
+      (click)="showMobileMenu()"
+    ></i>
+
+    <p-dialog
+      [(visible)]="mobileMenuVisible"
+      [modal]="true"
+      [style]="{ width: '95vw' }"
+      [draggable]="false"
+      [resizable]="false"
+      [closable]="true"
+      [blockScroll]="true"
+      [dismissableMask]="true"
+    >
+      <a
+        *ngFor="let item of items"
+        [routerLink]="item.url"
+        (click)="closeMobileMenu()"
+      >
+        <div class="mobile-nav-item">
+          {{ item.label }}
+        </div>
+      </a>
+    </p-dialog>
+  </div>
 </div>

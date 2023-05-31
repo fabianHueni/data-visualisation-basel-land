@@ -35,9 +35,19 @@ h3 {
 
 h1 {
   font-size: 3rem;
+
+  @media screen and (max-width: 768px) {
+    font-size: 2rem;
+  }
 }
 
 p {
   font-family: Roboto, sans-serif;
   line-height: 25px;
+}
+
+p-card {
+  h2 {
+    margin-top: 0;
+  }
 }

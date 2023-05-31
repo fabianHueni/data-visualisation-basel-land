@@ -9,9 +9,11 @@ import { PopulationService } from '../common/service/population.service';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
-  items: MenuItem[];
+  public items: MenuItem[];
 
-  activeItem: MenuItem;
+  public activeItem: MenuItem;
+
+  public mobileMenuVisible = false;
 
   constructor() {
     this.items = [
@@ -23,11 +25,6 @@ export class NavbarComponent {
       },
       { label: 'Daten', url: '/daten', icon: 'pi pi-fw pi-database' },
       { label: 'About', url: '/about', icon: 'pi pi-fw pi-info-circle' },
-      /*      {
-        label: 'Dokumentation',
-        url: '/dokumentation',
-        icon: 'pi pi-fw pi-file',
-      },*/
     ];
 
     this.activeItem = this.items[0] ?? null;
@@ -35,5 +32,13 @@ export class NavbarComponent {
 
   onActiveItemChange(event: MenuItem) {
     this.activeItem = event;
+  }
+
+  showMobileMenu() {
+    this.mobileMenuVisible = true;
+  }
+
+  closeMobileMenu() {
+    this.mobileMenuVisible = false;
   }
 }

@@ -60,8 +60,50 @@ export class HomeComponent {
       colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipMedian,
       legendTitle: 'Medianalter in Jahren',
+      description:
+        'Das Medianalter ist das Alter, bei dem die Hälfte der Bevölkerung jünger und die andere Hälfte älter ist. ' +
+        'Der Wert dient als Kennzahl für die Altersstruktur einer Bevölkerung.',
       min: 35,
       max: 55,
+    },
+    {
+      label: 'Betagte',
+      value: 'elderly',
+      data: (year: number) =>
+        this.populationService.getAgeGroupPerMunicipalityByYear(
+          year,
+          65,
+          200,
+          this.selectedSex
+        ),
+      color: (data: any) => {
+        return this.selectedDataset.colorScheme(
+          (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
+        );
+      },
+      colorScheme: interpolateBlues,
+      tooltipRef: () => this.tooltipSenior,
+      legendTitle: 'Anteil der Betagten in Prozent',
+      description: 'Als Betagte gelten alle Personen ab 65 Jahren.',
+      min: 0,
+      max: 30,
+    },
+    {
+      label: 'Hochbetagte',
+      value: 'seniors',
+      data: (year: number) =>
+        this.populationService.getAgeGroupPerMunicipalityByYear(year, 80, 200),
+      color: (data: any) => {
+        return interpolateBlues(
+          this.getDataByShape(data)?.percentageAgeGroup * 8
+        );
+      },
+      colorScheme: interpolateBlues,
+      tooltipRef: () => this.tooltipSenior,
+      legendTitle: 'Anteil der Hochbetagten in Prozent',
+      description: 'Als Hochbetagte gelten alle Personen ab 80 Jahren.',
+      min: 0,
+      max: 10,
     },
     {
       label: 'Altersklassen',
@@ -95,45 +137,9 @@ export class HomeComponent {
       colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipAgeBucket,
       legendTitle: 'Anteil der Altersklasse in Prozent',
+      description: 'Mit den obigen ',
       min: 0,
       max: 100,
-    },
-    {
-      label: 'Betagte',
-      value: 'elderly',
-      data: (year: number) =>
-        this.populationService.getAgeGroupPerMunicipalityByYear(
-          year,
-          65,
-          200,
-          this.selectedSex
-        ),
-      color: (data: any) => {
-        return this.selectedDataset.colorScheme(
-          (this.getDataByShape(data)?.percentageAgeGroup - 0.05) * 4 // shift by 5% and stretch with 4
-        );
-      },
-      colorScheme: interpolateBlues,
-      tooltipRef: () => this.tooltipSenior,
-      legendTitle: 'Anteil der Betagten in Prozent',
-      min: 0,
-      max: 30,
-    },
-    {
-      label: 'Hochbetagte',
-      value: 'seniors',
-      data: (year: number) =>
-        this.populationService.getAgeGroupPerMunicipalityByYear(year, 80, 200),
-      color: (data: any) => {
-        return interpolateBlues(
-          this.getDataByShape(data)?.percentageAgeGroup * 8
-        );
-      },
-      colorScheme: interpolateBlues,
-      tooltipRef: () => this.tooltipSenior,
-      legendTitle: 'Anteil der Hochbetagten in Prozent',
-      min: 0,
-      max: 10,
     },
   ];
 
