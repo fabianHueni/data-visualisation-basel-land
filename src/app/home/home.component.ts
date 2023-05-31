@@ -60,9 +60,6 @@ export class HomeComponent {
       colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipMedian,
       legendTitle: 'Medianalter in Jahren',
-      description:
-        'Das Medianalter ist das Alter, bei dem die Hälfte der Bevölkerung jünger und die andere Hälfte älter ist. ' +
-        'Der Wert dient als Kennzahl für die Altersstruktur einer Bevölkerung.',
       min: 35,
       max: 55,
     },
@@ -84,7 +81,6 @@ export class HomeComponent {
       colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipSenior,
       legendTitle: 'Anteil der Betagten in Prozent',
-      description: 'Als Betagte gelten alle Personen ab 65 Jahren.',
       min: 0,
       max: 30,
     },
@@ -101,7 +97,6 @@ export class HomeComponent {
       colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipSenior,
       legendTitle: 'Anteil der Hochbetagten in Prozent',
-      description: 'Als Hochbetagte gelten alle Personen ab 80 Jahren.',
       min: 0,
       max: 10,
     },
@@ -137,7 +132,6 @@ export class HomeComponent {
       colorScheme: interpolateBlues,
       tooltipRef: () => this.tooltipAgeBucket,
       legendTitle: 'Anteil der Altersklasse in Prozent',
-      description: 'Mit den obigen ',
       min: 0,
       max: 100,
     },
